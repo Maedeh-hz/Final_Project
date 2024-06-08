@@ -18,6 +18,9 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "orders")
 public class Order extends BaseEntity<Long> {
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private Subservice subservice;
+
     private String description;
 
     private Double suggestingPrice;
