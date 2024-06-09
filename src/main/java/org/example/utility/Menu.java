@@ -3,7 +3,9 @@ package org.example.utility;
 import jakarta.validation.*;
 import org.example.exception.NoResultException;
 import org.example.model.*;
+import org.example.model.custom_fields.Address;
 import org.example.model.enums.ExpertsLevel;
+import org.example.model.enums.OrdersLevel;
 import org.example.record.UpdatingDescription;
 import org.example.record.UpdatingWage;
 import org.hibernate.exception.ConstraintViolationException;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,7 +54,99 @@ public class Menu {
 
     private void customersMenu(){
         System.out.println("---- Customer Menu ----");
-        System.out.println("What do you want to do?");
+        int choice = 1;
+        while (choice!=0) {
+            System.out.println("""
+                    What do you want to do?
+                    0, Exit.
+                    1, Place an order.""");
+            choice = getInt();
+            switch (choice){
+                case 1 -> orderPlacing();
+                case 2 -> {}
+                default -> System.out.println("Wrong input, enter again.");
+            }
+        }
+
+    }
+
+    private void orderPlacing(){
+        loadAllServices();
+        System.out.println("Enter the id of the service: ");
+        long serviceId = getLong();
+        Service byId = ApplicationContext.getServiceService().findById(serviceId);
+        List<Long> subIds = new ArrayList<>();
+        try {
+            subIds = loadAllSubserviceByService(byId);
+        } catch (NoResultException e){
+            System.out.println(e.getMessage());
+        }
+        System.out.println("Enter the Subservice id: ");
+        long subId = getLong();
+        while (!subIds.contains(subId)){
+            System.out.println("Enter properly!");
+            subId = getLong();
+        }
+        Subservice subservice = ApplicationContext.getSubserviceService().findById(subId);
+        orderInfo info = getOrderInfo();
+        Order order = getOrder(info, subservice);
+        Order saved = ApplicationContext.getOrderService().saveOrUpdate(order);
+        if (saved.getId()!=null)
+            System.out.println("Done!");
+    }
+
+    private static Order getOrder(orderInfo info, Subservice subservice) {
+        return Order.builder()
+                .suggestingPrice(info.suggestingPrice())
+                .subservice(subservice)
+                .toDoDateAndTime(info.parsed())
+                .ordersLevel(OrdersLevel.WAITING_FOR_EXPERT_SUGGESTION)
+                .description(info.description())
+                .address(info.address())
+                .registerDate(LocalDate.now())
+                .build();
+    }
+
+    private orderInfo getOrderInfo() {
+        System.out.println("Now, Please enter the suggesting price: ");
+        Double suggestingPrice = getDouble();
+        System.out.println("description: ");
+        String description = getString();
+        LocalDateTime parsed = getLocalDateTime();
+        while (parsed.isBefore(LocalDateTime.now())){
+            System.out.println("Enter a date after today!");
+            parsed = getLocalDateTime();
+        }
+        Address address = getAddress();
+        return new orderInfo(suggestingPrice, description, parsed, address);
+    }
+
+    private static LocalDateTime getLocalDateTime() {
+        System.out.println("And for when? (yyyy-mm-dd)");
+        String temp = getString();
+        System.out.println("Time? (hh:mm)");
+        String temp2 = getString() + ":00";
+        String dateAndTime = temp + "T" + temp2;
+        return LocalDateTime.parse(dateAndTime);
+    }
+
+    private record orderInfo(Double suggestingPrice, String description, LocalDateTime parsed, Address address) {
+    }
+
+    private Address getAddress(){
+        System.out.println("--- address ---");
+        System.out.println("Province: ");
+        String province = getString();
+        System.out.println("street: ");
+        String street = getString();
+        System.out.println("alley: ");
+        String alley = getString();
+        System.out.println("no: (digits)");
+        int no = getInt();
+        return Address.builder().province(province)
+                .street(street)
+                .alley(alley)
+                .no(no).build();
     }
 
     private void adminsMenu(){
@@ -193,11 +288,10 @@ public class Menu {
         List<Expert> experts = ApplicationContext.getExpertService()
                 .loadAllWaitingForVerificationExperts();
 
-        experts.forEach(expert -> {
+        experts.forEach(expert ->
             System.out.println("id: " + expert.getId() +
                     "   | username: " + expert.getUsername() +
-                    "   | situation: " + expert.getExpertsLevel());
-        });
+                    "   | situation: " + expert.getExpertsLevel()));
     }
 
     private void serviceCRUD(){
@@ -508,6 +602,21 @@ public class Menu {
                     "   | service name: " + service.getServiceName());
         });
         return serviceIds;
+    }
+
+    private List<Long> loadAllSubserviceByService(Service service){
+        List<Subservice> list = ApplicationContext.getSubserviceService().loadAllByService(service);
+        List<Long> ids = new ArrayList<>();
+
+        list.forEach(subservice -> {
+            System.out.println("id: " + subservice.getId() +
+                    "   | name: " + subservice.getName() +
+                    "   | base price: " + subservice.getBasePrice() +
+                    "   | description: " + subservice.getDescription());
+            ids.add(subservice.getId());
+        });
+
+        return ids;
     }
 
     private Result getResult() {
