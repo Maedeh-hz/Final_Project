@@ -23,6 +23,9 @@ public class Order extends BaseEntity<Long> {
     @ManyToOne(cascade = CascadeType.MERGE)
     private Subservice subservice;
 
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private Customer customer;
+
     private String description;
 
     private Double suggestingPrice;
