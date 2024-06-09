@@ -99,10 +99,23 @@ public class Menu {
                 .expert(expert)
                 .subservice(byId)
                 .build();
-        User_SubService saved = ApplicationContext.getUsersSubServiceService().saveOrUpdate(userSubService);
-        if (saved!=null){
-            System.out.println("Done!");
+        User_SubService byExpertAndSubservice = null;
+        try {
+             byExpertAndSubservice = ApplicationContext
+                    .getUsersSubServiceService().findByExpertAndSubservice(expert, byId);
+        } catch (NoResultException e){
+            System.out.println(e.getMessage());
         }
+        if (byExpertAndSubservice==null){
+            User_SubService saved = ApplicationContext.getUsersSubServiceService().saveOrUpdate(userSubService);
+            if (saved!=null){
+                System.out.println("Done!");
+            } else {
+                System.out.println("Something went wrong!");
+            }
+        } else
+            System.out.println("The expert is already under service of this subservice.");
+
     }
 
     private void removeExpertFromSubservice(){
