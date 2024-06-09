@@ -59,11 +59,13 @@ public class Menu {
             System.out.println("""
                     What do you want to do?
                     0, Exit.
-                    1, Place an order.""");
+                    1, Place an order.
+                    2, Change password.""");
             choice = getInt();
             switch (choice){
+                case 0 -> System.out.println("exiting from customers manu.");
                 case 1 -> orderPlacing();
-                case 2 -> {}
+                case 2 -> changePassword();
                 default -> System.out.println("Wrong input, enter again.");
             }
         }
@@ -99,6 +101,7 @@ public class Menu {
         return Order.builder()
                 .suggestingPrice(info.suggestingPrice())
                 .subservice(subservice)
+                .customer(SecurityContext.customer)
                 .toDoDateAndTime(info.parsed())
                 .ordersLevel(OrdersLevel.WAITING_FOR_EXPERT_SUGGESTION)
                 .description(info.description())
@@ -151,22 +154,27 @@ public class Menu {
 
     private void adminsMenu(){
         System.out.println("---- Admin Menu ----");
-        System.out.println("""
-                What do you want to do?
-                1, Service CRUD
-                2, Subservice CRUD
-                3, Verifying Experts.
-                4, Add an Expert to a Subservice.
-                5, Remove an Expert from a Subservice.
-                """);
-        int choice = getInt();
-        switch (choice){
-            case 1 -> serviceCRUD();
-            case 2 -> subserviceCRUD();
-            case 3 -> verifyingExpert();
-            case 4 -> addExpertToSubservice();
-            case 5 -> removeExpertFromSubservice();
-            default -> System.out.println("Entrance out of options!");
+        int choice = 1;
+        while (choice!=0){
+            System.out.println("""
+                    What do you want to do?
+                    0, Exit.
+                    1, Service CRUD
+                    2, Subservice CRUD
+                    3, Verifying Experts.
+                    4, Add an Expert to a Subservice.
+                    5, Remove an Expert from a Subservice.
+                    """);
+            choice = getInt();
+            switch (choice) {
+                case 0 -> System.out.println("exiting from admins manu.");
+                case 1 -> serviceCRUD();
+                case 2 -> subserviceCRUD();
+                case 3 -> verifyingExpert();
+                case 4 -> addExpertToSubservice();
+                case 5 -> removeExpertFromSubservice();
+                default -> System.out.println("Entrance out of options!");
+            }
         }
 
     }
@@ -497,6 +505,21 @@ public class Menu {
             }
         } else
             System.out.println("User doesn't exist at all!!!");
+    }
+
+    private void changePassword(){
+        printPasswordPolicy();
+        System.out.println("Enter the new password: ");
+        String newPass = getString();
+        while (!validatePass(newPass)){
+            System.out.println("Please enter a valid password!");
+            newPass = getString();
+        }
+        SecurityContext.user.setPassword(newPass);
+        User updated = ApplicationContext.getUserService().saveOrUpdate(SecurityContext.user);
+        if (updated.getPassword().equals(newPass))
+            System.out.println("Done!");
+
     }
 
     private void registerNewService(){
