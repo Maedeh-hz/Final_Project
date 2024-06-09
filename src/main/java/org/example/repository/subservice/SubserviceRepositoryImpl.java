@@ -29,4 +29,5 @@ public class SubserviceRepositoryImpl extends BaseRepositoryImpl<Subservice, Lon
         return Optional.ofNullable(Optional.of(query.list())
                 .orElseThrow(() -> new NoResultException("No Subservice found.")));
     }
+
 }
