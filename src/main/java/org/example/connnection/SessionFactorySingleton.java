@@ -29,7 +29,7 @@ public class SessionFactorySingleton {
                     .addAnnotatedClass(Suggestion.class)
                     .addAnnotatedClass(User.class)
                     .addAnnotatedClass(Wallet.class)
-                    .addAnnotatedClass(Image.class)
+                    .addAnnotatedClass(User_SubService.class)
                     .addAnnotatedClass(Address.class)
                     .buildMetadata()
                     .buildSessionFactory();
