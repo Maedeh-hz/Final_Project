@@ -6,9 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.example.base.model.BaseEntity;
 import org.example.model.custom_fields.Address;
+import org.example.model.enums.OrdersLevel;
 import org.hibernate.annotations.SoftDelete;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,7 +29,10 @@ public class Order extends BaseEntity<Long> {
 
     private LocalDate registerDate;
 
-    private LocalDate toDoDateAndTime;
+    private LocalDateTime toDoDateAndTime;
+
+    @Enumerated(EnumType.STRING)
+    private OrdersLevel ordersLevel;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Address address;
