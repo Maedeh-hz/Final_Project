@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 import org.example.base.model.BaseEntity;
 import org.hibernate.annotations.SoftDelete;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -27,8 +28,5 @@ public class Subservice extends BaseEntity<Long> {
     private Double basePrice;
 
     private String description;
-
-    @ManyToMany(cascade = CascadeType.MERGE, targetEntity = Expert.class)
-    private List<Expert> experts;
 
 }
