@@ -61,16 +61,73 @@ public class Menu {
                 1, Service CRUD
                 2, Subservice CRUD
                 3, Verifying Experts.
-                
+                4, Add an Expert to a Subservice.
+                5, Remove an Expert from a Subservice.
                 """);
         int choice = getInt();
         switch (choice){
             case 1 -> serviceCRUD();
             case 2 -> subserviceCRUD();
             case 3 -> verifyingExpert();
+            case 4 -> addExpertToSubservice();
+            case 5 -> removeExpertFromSubservice();
             default -> System.out.println("Entrance out of options!");
         }
 
+    }
+
+    private void addExpertToSubservice(){
+        System.out.println("---- Adding Expert to a Subservice ----");
+        System.out.println();
+        List<Long> subservice = loadAllSubservice();
+        System.out.println("Enter the id of subservice: ");
+        long id = getLong();
+        while (!subservice.contains(id)){
+            System.out.println("Please enter a valid integer!");
+            id = getLong();
+        }
+        Subservice byId = ApplicationContext.getSubserviceService().findById(id);
+        List<Long> experts = printAllVerifiedExperts();
+        System.out.println("Now enter the id of the expert you wanna add: ");
+        long expertId = getLong();
+        while (!experts.contains(expertId)){
+            System.out.println("Please enter a valid integer!");
+            expertId = getLong();
+        }
+        Expert expert = ApplicationContext.getExpertService().findById(expertId);
+        User_SubService userSubService = User_SubService.builder()
+                .expert(expert)
+                .subservice(byId)
+                .build();
+        User_SubService saved = ApplicationContext.getUsersSubServiceService().saveOrUpdate(userSubService);
+        if (saved!=null){
+            System.out.println("Done!");
+        }
+    }
+
+    private void removeExpertFromSubservice(){
+        System.out.println("---- Removing Expert from a Subservice ----");
+        System.out.println();
+        List<Long> subservice = loadAllSubservice();
+        System.out.println("Enter the id of subservice: ");
+        long id = getLong();
+        while (!subservice.contains(id)){
+            System.out.println("Please enter a valid integer!");
+            id = getLong();
+        }
+        Subservice byId = ApplicationContext.getSubserviceService().findById(id);
+        List<Long> expertsId = printAllExpertsOfSubservice(byId);
+        System.out.println("Enter the id of expert: ");
+        Long expertId = getLong();
+        while (!expertsId.contains(expertId)){
+            System.out.println("Please enter a valid integer!");
+            expertId = getLong();
+        }
+        Expert expert = ApplicationContext.getExpertService().findById(expertId);
+        User_SubService byExpertAndSubservice = ApplicationContext
+                .getUsersSubServiceService().findByExpertAndSubservice(expert, byId);
+        ApplicationContext.getUsersSubServiceService().delete(byExpertAndSubservice);
+        System.out.println("Done!");
     }
 
     private void verifyingExpert(){
@@ -94,9 +151,34 @@ public class Menu {
         System.out.println("Changed: " + expert.getExpertsLevel());
     }
 
+    private List<Long> printAllExpertsOfSubservice(Subservice subservice){
+        List<User_SubService> list = ApplicationContext.getUsersSubServiceService().findBySubservice(subservice);
+        List<Long> longs = new ArrayList<>();
+        list.forEach(sub -> {
+            System.out.println("id: " + sub.getExpert().getId() +
+                    "   | username: " + sub.getExpert().getUsername() +
+                    "   | situation: " + sub.getExpert().getExpertsLevel());
+            longs.add(sub.getExpert().getId());
+        });
+        return longs;
+    }
+
+    private List<Long> printAllVerifiedExperts(){
+        List<Expert> experts = ApplicationContext.getExpertService()
+                        .loadAllVerifiedExperts();
+        List<Long> expertsId = new ArrayList<>();
+        experts.forEach(expert -> {
+            System.out.println("id: " + expert.getId() +
+                    "   | username: " + expert.getUsername() +
+                    "   | situation: " + expert.getExpertsLevel());
+            expertsId.add(expert.getId());
+        });
+        return expertsId;
+    }
+
     private void printAllWaitingForVerificationExperts(){
         List<Expert> experts = ApplicationContext.getExpertService()
-                .loadAllWaitingforVerificationExperts();
+                .loadAllWaitingForVerificationExperts();
 
         experts.forEach(expert -> {
             System.out.println("id: " + expert.getId() +
@@ -151,14 +233,18 @@ public class Menu {
 
     }
 
-    private void loadAllSubservice(){
+    private List<Long> loadAllSubservice(){
         List<Subservice> subservice = ApplicationContext.getSubserviceService().loadAll();
 
-        subservice.forEach(sub ->
+        List<Long> subserviceId = new ArrayList<>();
+        subservice.forEach(sub -> {
             System.out.println("Id: " + sub.getId() +
                     "   | name: " + sub.getName() +
                     "   | description: " + sub.getDescription() +
-                    "   | wage: " + sub.getBasePrice()));
+                    "   | wage: " + sub.getBasePrice());
+            subserviceId.add(sub.getId());
+        } );
+        return subserviceId;
     }
 
     private void signUp(){
@@ -489,8 +575,13 @@ public class Menu {
     }
 
     private void setUpAdmin(){
-        Admin admin = Admin.builder().username("maedema")
-                .password("Maede@123")
+        Admin admin = Admin.builder()
+                .firstName("Radvin")
+                .lastName("Mohammadi")
+                .email("Radi@gmail.com")
+                .registrationDate(LocalDate.now())
+                .username("radirad")
+                .password("Radi@123")
                 .build();
         ApplicationContext.getAdminService().saveOrUpdate(admin);
     }
