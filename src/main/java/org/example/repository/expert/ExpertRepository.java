@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface ExpertRepository extends BaseRepository<Expert, Long> {
     Optional<Expert> findByUsername(String username);
 
-    Optional<List<Expert>> loadAllWaitingforVerificationExperts();
+    Optional<List<Expert>> loadAllWaitingForVerificationExperts();
+
+    Optional<List<Expert>> loadAllVerifiedExperts();
 }

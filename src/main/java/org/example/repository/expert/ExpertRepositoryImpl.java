@@ -35,9 +35,20 @@ public class ExpertRepositoryImpl extends BaseRepositoryImpl<Expert, Long>
     }
 
     @Override
-    public Optional<List<Expert>> loadAllWaitingforVerificationExperts() {
+    public Optional<List<Expert>> loadAllWaitingForVerificationExperts() {
         Session session = sessionFactory.getCurrentSession();
         String hql = "FROM Expert e where e.expertsLevel = 'WAITING_FOR_VERIFYING' ";
+        Query<Expert> query = session.createQuery(hql, getClassName());
+        List<Expert> experts = query.getResultList();
+        if (experts.isEmpty())
+            return Optional.empty();
+        return Optional.of(experts);
+    }
+
+    @Override
+    public Optional<List<Expert>> loadAllVerifiedExperts() {
+        Session session = sessionFactory.getCurrentSession();
+        String hql = "FROM Expert e where e.expertsLevel = 'VERIFIED' ";
         Query<Expert> query = session.createQuery(hql, getClassName());
         List<Expert> experts = query.getResultList();
         if (experts.isEmpty())
