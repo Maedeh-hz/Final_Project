@@ -35,12 +35,26 @@ public class ExpertServiceImpl extends BaseServiceImpl<Expert, Long, ExpertRepos
     }
 
     @Override
-    public List<Expert> loadAllWaitingforVerificationExperts() {
+    public List<Expert> loadAllWaitingForVerificationExperts() {
         try (Session session = sessionFactory.getCurrentSession()) {
             session.beginTransaction();
-            Optional<List<Expert>> optional = repository.loadAllWaitingforVerificationExperts();
+            Optional<List<Expert>> optional = repository.loadAllWaitingForVerificationExperts();
             optional.orElseThrow(
                     () -> new NoResultException("No waiting for verifying Expert found.")
+            );
+            return optional.get();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<Expert> loadAllVerifiedExperts() {
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+            Optional<List<Expert>> optional = repository.loadAllVerifiedExperts();
+            optional.orElseThrow(
+                    () -> new NoResultException("No verified Expert found.")
             );
             return optional.get();
         } catch (Exception e) {
