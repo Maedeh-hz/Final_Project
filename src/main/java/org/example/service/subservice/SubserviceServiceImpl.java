@@ -2,6 +2,7 @@ package org.example.service.subservice;
 
 import org.example.base.exception.Exception;
 import org.example.base.service.BaseServiceImpl;
+import org.example.model.Expert;
 import org.example.model.Subservice;
 import org.example.repository.subservice.SubserviceRepository;
 import org.hibernate.Session;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class SubserviceServiceImpl extends BaseServiceImpl<Subservice, Long, SubserviceRepository>
-        implements SubserviceService {
+        implements Sub_serviceService {
     public SubserviceServiceImpl(SubserviceRepository repository, SessionFactory sessionFactory) {
         super(repository, sessionFactory);
     }
@@ -28,5 +29,6 @@ public class SubserviceServiceImpl extends BaseServiceImpl<Subservice, Long, Sub
             return null;
         }
     }
+
 
 }

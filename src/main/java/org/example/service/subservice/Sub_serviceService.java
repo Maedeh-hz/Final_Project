@@ -5,7 +5,8 @@ import org.example.model.Subservice;
 
 import java.util.List;
 
-public interface SubserviceService extends BaseService<Subservice, Long> {
-
+public interface Sub_serviceService extends BaseService<Subservice, Long>  {
     List<Subservice> loadAll();
+
+
 }
