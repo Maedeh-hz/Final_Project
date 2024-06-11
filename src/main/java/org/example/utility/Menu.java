@@ -48,6 +48,19 @@ public class Menu {
     private void expertsMenu(){
         if (SecurityContext.expert.getExpertsLevel().equals(ExpertsLevel.VERIFIED)) {
             System.out.println("---- Expert Menu ----");
+            int choice = 1;
+            while (choice!=0) {
+                System.out.println("""
+                    What do you want to do?
+                    0, Exit.
+                    1, Change password.""");
+                choice = getInt();
+                switch (choice){
+                    case 0 -> System.out.println("exiting from customers manu.");
+                    case 1 -> changePassword();
+                    default -> System.out.println("Wrong input, enter again.");
+                }
+            }
         } else
             System.out.println("Sorry, you are not verified yet.");
     }
