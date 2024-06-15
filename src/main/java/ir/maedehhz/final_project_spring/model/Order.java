@@ -1,0 +1,46 @@
+package ir.maedehhz.final_project_spring.model;
+
+import ir.maedehhz.final_project_spring.model.custom_fields.Address;
+import ir.maedehhz.final_project_spring.model.enums.OrderStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SoftDelete;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@SoftDelete
+
+@Entity
+@Table(name = "orders")
+public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private Subservice subservice;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private Customer customer;
+
+    private String description;
+
+    private Double suggestingPrice;
+
+    private LocalDate registerDate;
+
+    private LocalDateTime toDoDateAndTime;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Address address;
+}
