@@ -12,7 +12,6 @@ import org.hibernate.annotations.SoftDelete;
 @Setter
 @SuperBuilder
 @AllArgsConstructor
-@NoArgsConstructor
 @SoftDelete
 
 @Entity
