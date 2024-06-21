@@ -13,6 +13,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -74,13 +76,20 @@ public class SubserviceServiceImplTest {
 
     @Test
     @Order(4)
+    public void findAll(){
+        List<Service> all = serviceService.findAll();
+        assertEquals(1, all.get(0).getId());
+    }
+
+    @Test
+    @Order(5)
     public void updateDescriptionOfSubservice(){
         Subservice updated = subserviceService.updateDescription(1L, "for test 1");
         assertEquals("for test 1", updated.getDescription());
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void updateDescriptionOfSubserviceWithSameInfo(){
         SameInfoException exception = assertThrows(SameInfoException.class, () ->
                 subserviceService.updateDescription(1L, "for test 1"));
@@ -88,14 +97,14 @@ public class SubserviceServiceImplTest {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void updateBasePriceOfSubservice(){
         Subservice updated = subserviceService.updateBasePrice(1L, 1000);
         assertEquals(1000, updated.getBasePrice());
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void updateBasePriceOfSubserviceWithSameInfo(){
         SameInfoException exception = assertThrows(SameInfoException.class, () ->
                 subserviceService.updateBasePrice(1L, 1000));
