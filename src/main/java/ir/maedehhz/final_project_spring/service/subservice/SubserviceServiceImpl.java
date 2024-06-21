@@ -9,6 +9,8 @@ import ir.maedehhz.final_project_spring.service.service.ServiceServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class SubserviceServiceImpl implements SubserviceService{
@@ -48,5 +50,10 @@ public class SubserviceServiceImpl implements SubserviceService{
             throw new SameInfoException("The base price of subservice is already this!");
         byId.setBasePrice(newBasePrice);
         return repository.save(byId);
+    }
+
+    @Override
+    public List<Subservice> findAll() {
+        return repository.findAll();
     }
 }
