@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -40,5 +42,11 @@ public class ServiceServiceImplTest {
         DuplicateInfoException exception = assertThrows(DuplicateInfoException.class, ()->
                 serviceService.save(service));
         assertEquals("Service with name test1 exists!", exception.getMessage());
+    }
+
+    @Test
+    public void findAll(){
+        List<Service> all = serviceService.findAll();
+        assertEquals(1, all.get(0).getId());
     }
 }
