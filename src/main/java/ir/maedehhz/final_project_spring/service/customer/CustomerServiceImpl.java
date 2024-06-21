@@ -1,0 +1,56 @@
+package ir.maedehhz.final_project_spring.service.customer;
+
+import ir.maedehhz.final_project_spring.exception.*;
+import ir.maedehhz.final_project_spring.model.Customer;
+import ir.maedehhz.final_project_spring.repository.CustomerRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@Service
+@RequiredArgsConstructor
+public class CustomerServiceImpl implements CustomerService{
+    private final CustomerRepository repository;
+    @Override
+    public Customer save(Customer customer) {
+        if (repository.existsByUsername(customer.getUsername()))
+            throw new DuplicateInfoException
+                    (String.format("User with username %s exists!", customer.getUsername()));
+        if (!validateEmail(customer.getEmail()))
+            throw new InvalidEmailException("Users entrance email is invalid!");
+        return repository.save(customer);
+    }
+
+    @Override
+    public Customer findByUsername(String username) {
+        if (!repository.existsByUsername(username))
+            throw new NotFoundException(String.format("User with username %s not found!", username));
+        return repository.findByUsername(username);
+    }
+
+    @Override
+    public Customer updatePassword(Customer customer, String newPass, String newPass2) {
+        if (!newPass.equals(newPass2))
+            throw new PasswordMismatchException("The first and second passwords are not the same!");
+        if (!validatePass(newPass))
+            throw new InvalidPasswordException("Invalid password!");
+        if (validatePass(newPass))
+            customer.setPassword(newPass);
+        return repository.save(customer);
+    }
+
+    private boolean validatePass(String pass){
+        Pattern validPass = Pattern.compile("^.*(?=.{8,})(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = validPass.matcher(pass);
+        return matcher.matches();
+    }
+
+    private boolean validateEmail(String email) {
+        Pattern VALID_EMAIL_ADDRESS_REGEX =
+                Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+        return matcher.matches();
+    }
+}
