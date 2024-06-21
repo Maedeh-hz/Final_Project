@@ -3,8 +3,11 @@ package ir.maedehhz.final_project_spring.service.service;
 import ir.maedehhz.final_project_spring.exception.DuplicateInfoException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
 import ir.maedehhz.final_project_spring.model.Service;
+import ir.maedehhz.final_project_spring.model.Subservice;
 import ir.maedehhz.final_project_spring.repository.ServiceRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
@@ -28,5 +31,10 @@ public class ServiceServiceImpl implements ServiceService{
     @Override
     public boolean existsByServiceName(String serviceName) {
         return repository.existsByServiceName(serviceName);
+    }
+
+    @Override
+    public List<Service> findAll() {
+        return repository.findAll();
     }
 }
