@@ -17,9 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -110,5 +110,18 @@ public class OrderServiceImplTest {
     public void updateOrderStatusToDone(){
         Order updated = orderService.updateStatusToDone(2);
         assertEquals(OrderStatus.DONE, updated.getStatus());
+    }
+
+    @Test
+    public void findAllExpertsSubserviceOrder(){
+        List<Order> all = orderService.findAllByExpertsSubservice(3);
+
+        assertEquals(all.get(0).getId(), 1);
+    }
+
+    @Test
+    public void reduceScorePerHourDelay(){
+        boolean b = orderService.reduce1ScoreFromExpertPerHour(2);
+        assertTrue(b);
     }
 }
