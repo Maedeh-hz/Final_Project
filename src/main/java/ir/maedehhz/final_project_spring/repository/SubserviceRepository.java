@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface SubserviceRepository extends JpaRepository<Subservice, Long> {
 
     boolean existsByName(String name);
-    Subservice findByName(String name);
 
 }
