@@ -1,7 +1,6 @@
 package ir.maedehhz.final_project_spring.service.order;
 
 import ir.maedehhz.final_project_spring.model.Order;
-import ir.maedehhz.final_project_spring.model.enums.OrderStatus;
 
 import java.util.List;
 
