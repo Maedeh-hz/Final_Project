@@ -53,9 +53,4 @@ public class SubserviceServiceImpl implements SubserviceService{
         byId.setBasePrice(newBasePrice);
         return repository.save(byId);
     }
-
-    @Override
-    public List<Subservice> findAll() {
-        return repository.findAll();
-    }
 }

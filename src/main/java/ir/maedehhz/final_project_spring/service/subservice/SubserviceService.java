@@ -10,5 +10,4 @@ public interface SubserviceService {
     Subservice findById(long id);
     Subservice updateDescription(long id, String newDescription);
     Subservice updateBasePrice(long id, double newBasePrice);
-    List<Subservice> findAll();
 }
