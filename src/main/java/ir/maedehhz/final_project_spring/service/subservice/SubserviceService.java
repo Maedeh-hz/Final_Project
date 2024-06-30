@@ -2,8 +2,6 @@ package ir.maedehhz.final_project_spring.service.subservice;
 
 import ir.maedehhz.final_project_spring.model.Subservice;
 
-import java.util.List;
-
 public interface SubserviceService {
 
     Subservice save(Subservice subservice, long serviceId);

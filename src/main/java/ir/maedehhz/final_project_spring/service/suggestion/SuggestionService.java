@@ -1,7 +1,5 @@
 package ir.maedehhz.final_project_spring.service.suggestion;
 
-import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveRequest;
-import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveResponse;
 import ir.maedehhz.final_project_spring.model.Expert;
 import ir.maedehhz.final_project_spring.model.Order;
 import ir.maedehhz.final_project_spring.model.Suggestion;
