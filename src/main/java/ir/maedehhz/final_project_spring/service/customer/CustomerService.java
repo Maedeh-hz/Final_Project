@@ -7,5 +7,7 @@ public interface CustomerService {
 
     Customer findByUsername(String username);
 
-    Customer updatePassword(Customer customer, String newPass, String newPass2);
+    Customer findById(long customerId);
+
+    Customer updatePassword(long customerId, String previousPass, String newPass, String newPass2);
 }
