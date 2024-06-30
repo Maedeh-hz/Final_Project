@@ -16,15 +16,17 @@ import java.util.List;
 public class SubserviceServiceImpl implements SubserviceService{
 
     private final SubserviceRepository repository;
+
     private final ServiceServiceImpl serviceService;
 
     @Override
-    public Subservice save(Subservice subservice) {
+    public Subservice save(Subservice subservice, long serviceId) {
+        ir.maedehhz.final_project_spring.model.Service service = serviceService.findById(serviceId);
+        subservice.setService(service);
+
         if (repository.existsByName(subservice.getName()))
             throw new DuplicateInfoException(String.format("Subservice with name %s exists!", subservice.getName()));
-        if (!serviceService.existsByServiceName(subservice.getService().getServiceName()))
-            throw new NotFoundException(String.format("Service with name %s doesn't exist.",
-                    subservice.getService().getServiceName()));
+
         return repository.save(subservice);
     }
 
