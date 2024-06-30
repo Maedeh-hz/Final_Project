@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,15 +25,28 @@ public class ExpertServiceImpl implements ExpertService{
         if (repository.existsByUsername(expert.getUsername()))
             throw new DuplicateInfoException
                     (String.format("User with username %s exists!", expert.getUsername()));
+
+        if (!validatePass(expert.getPassword()))
+            throw new InvalidPasswordException("Users entrance password is invalid!");
+
         if (!validateEmail(expert.getEmail()))
             throw new InvalidEmailException("Users entrance email is invalid!");
+
         if (!imagePath.endsWith(".png"))
             throw new ImageFormatException("The image format should be in PNG!");
+
         expert.setImage(getBytesForExpert(imagePath));
+
         if (expert.getImage().length > 300 * 1024)
             throw new ImageLengthOutOfBoundException("The uploaded image size is more than 300KB!");
 
-        expert.setImage(getBytesForExpert(imagePath));
+        expert.setUsername(expert.getEmail());
+        expert.setRegistrationDate(LocalDate.now());
+        return repository.save(expert);
+    }
+
+    @Override
+    public Expert updateScore(Expert expert) {
         return repository.save(expert);
     }
 
@@ -44,7 +58,10 @@ public class ExpertServiceImpl implements ExpertService{
     }
 
     @Override
-    public Expert updatePassword(Expert expert, String newPass, String newPass2) {
+    public Expert updatePassword(long expertId, String previousPass, String newPass, String newPass2) {
+        Expert expert = findById(expertId);
+        if (!previousPass.equals(expert.getPassword()))
+            throw new PasswordMismatchException("Wrong password!");
         if (!newPass.equals(newPass2))
             throw new PasswordMismatchException("The first and second passwords are not the same!");
         if (!validatePass(newPass))
@@ -73,7 +90,6 @@ public class ExpertServiceImpl implements ExpertService{
         return repository.findById(id).orElseThrow(() ->
                 new NotFoundException(String.format("Expert with id %s couldn't be found.", id)));
     }
-
 
     private boolean validatePass(String pass){
         Pattern validPass = Pattern.compile("^.*(?=.{8,})(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$", Pattern.CASE_INSENSITIVE);
