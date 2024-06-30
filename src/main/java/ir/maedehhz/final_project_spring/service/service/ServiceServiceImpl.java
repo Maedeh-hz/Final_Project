@@ -3,7 +3,6 @@ package ir.maedehhz.final_project_spring.service.service;
 import ir.maedehhz.final_project_spring.exception.DuplicateInfoException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
 import ir.maedehhz.final_project_spring.model.Service;
-import ir.maedehhz.final_project_spring.model.Subservice;
 import ir.maedehhz.final_project_spring.repository.ServiceRepository;
 import lombok.RequiredArgsConstructor;
 
