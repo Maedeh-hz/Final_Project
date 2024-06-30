@@ -32,13 +32,6 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public Customer findByUsername(String username) {
-        if (!repository.existsByUsername(username))
-            throw new NotFoundException(String.format("User with username %s not found!", username));
-        return repository.findByUsername(username);
-    }
-
-    @Override
     public Customer findById(long customerId) {
         return repository.findById(customerId).orElseThrow(() ->
                 new NotFoundException(String.format("Customer with id %s couldn't be found.", customerId)));
