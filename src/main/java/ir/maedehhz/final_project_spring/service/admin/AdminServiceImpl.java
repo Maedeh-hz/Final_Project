@@ -7,6 +7,8 @@ import ir.maedehhz.final_project_spring.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
@@ -18,6 +20,7 @@ public class AdminServiceImpl implements AdminService {
         if (repository.existsByUsername(admin.getUsername()))
             throw new DuplicateInfoException
                     (String.format("User with username %s exists!", admin.getUsername()));
+        admin.setRegistrationDate(LocalDate.now());
         return repository.save(admin);
     }
 
