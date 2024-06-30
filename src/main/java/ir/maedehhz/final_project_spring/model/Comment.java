@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SoftDelete;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @SuperBuilder
@@ -22,11 +24,13 @@ public class Comment {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    private String comment;
+    private String context;
 
     private Double expertScore;
 
     @OneToOne(cascade = CascadeType.MERGE)
     private Order order;
+
+    private LocalDateTime registrationDate;
 
 }

@@ -45,6 +45,9 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    @OneToOne(cascade = CascadeType.MERGE)
+    private Suggestion suggestion;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Address address;
 }

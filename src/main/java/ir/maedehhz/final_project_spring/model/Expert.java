@@ -1,7 +1,10 @@
 package ir.maedehhz.final_project_spring.model;
 
 import ir.maedehhz.final_project_spring.model.enums.ExpertStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

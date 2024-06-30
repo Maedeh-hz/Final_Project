@@ -25,7 +25,4 @@ public class Service {
     @Column(unique = true)
     private String serviceName;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    private Admin registeredAdmin;
-
 }
