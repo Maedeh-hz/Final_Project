@@ -12,12 +12,12 @@ import java.util.Optional;
 
 @Repository
 public interface User_SubserviceRepository extends JpaRepository<User_SubService, Long> {
-    <S extends User_SubService> boolean existsByExpertAndSubservice(Expert expert, Subservice subservice);
+    boolean existsByExpertAndSubservice(Expert expert, Subservice subservice);
 
     @Query("select u from User_SubService u where u.expert.id = ?1 and u.subservice.id = ?2")
     Optional<User_SubService> findByExpert_IdAndAndSubservice_Id(long expertId, long subserviceId);
 
-    @Override
-    void delete(User_SubService userSubService);
     List<User_SubService> findAllByExpert_Id(Long expert_id);
+
+    List<User_SubService> findAllBySubservice(Subservice subservice);
 }
