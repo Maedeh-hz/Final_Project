@@ -3,18 +3,21 @@ package ir.maedehhz.final_project_spring.controller.expert;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertPasswordUpdateRequest;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertSaveRequest;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertSaveResponse;
+import ir.maedehhz.final_project_spring.dto.order.OrderFindAllResponse;
 import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveRequest;
 import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveResponse;
 import ir.maedehhz.final_project_spring.mapper.expert.ExpertMapper;
 import ir.maedehhz.final_project_spring.mapper.suggestion.SuggestionMapper;
 import ir.maedehhz.final_project_spring.model.Expert;
 import ir.maedehhz.final_project_spring.model.Order;
+import ir.maedehhz.final_project_spring.model.Subservice;
 import ir.maedehhz.final_project_spring.model.Suggestion;
 import ir.maedehhz.final_project_spring.model.enums.ExpertStatus;
 import ir.maedehhz.final_project_spring.service.comment.CommentServiceImpl;
 import ir.maedehhz.final_project_spring.service.expert.ExpertServiceImpl;
 import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
 import ir.maedehhz.final_project_spring.service.suggestion.SuggestionServiceImpl;
+import ir.maedehhz.final_project_spring.service.user_subservice.User_SubserviceServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +35,7 @@ public class ExpertController {
     private final SuggestionServiceImpl suggestionService;
     private final OrderServiceImpl orderService;
     private final CommentServiceImpl commentService;
+    private final User_SubserviceServiceImpl userSubserviceService;
 
     @PostMapping("/save-expert")
     public ResponseEntity<ExpertSaveResponse> saveExpert(@RequestBody ExpertSaveRequest request){
@@ -76,10 +80,16 @@ public class ExpertController {
         return new ResponseEntity<>(v, HttpStatus.FOUND);
     }
 
-    @GetMapping("/find-all-orders-by-experts-subservice")
+    @GetMapping("/find-all-subservices-of-expert")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<Order> findAllOrdersByExpertSubservice(@RequestBody long expertId){
-        return orderService.findAllByExpertsSubservice(expertId);
+    public List<Subservice> findAllSubservicesOfExpert(@RequestBody long expertId){
+        return userSubserviceService.findAllByExpert_Id(expertId);
+    }
+
+    @GetMapping("/find-all-orders-by-subservice")
+    @ResponseStatus(HttpStatus.FOUND)
+    public List<OrderFindAllResponse> findAllOrdersByExpertSubservice(@RequestBody long subserviceId){
+        return orderService.findAllBySubservice(subserviceId);
     }
 
 
