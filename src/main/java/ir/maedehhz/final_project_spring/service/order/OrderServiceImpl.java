@@ -5,13 +5,15 @@ import ir.maedehhz.final_project_spring.exception.IneligibleObjectException;
 import ir.maedehhz.final_project_spring.exception.InvalidDateForOrderException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
 import ir.maedehhz.final_project_spring.mapper.order.OrderMapper;
-import ir.maedehhz.final_project_spring.model.*;
+import ir.maedehhz.final_project_spring.model.Customer;
+import ir.maedehhz.final_project_spring.model.Expert;
+import ir.maedehhz.final_project_spring.model.Order;
+import ir.maedehhz.final_project_spring.model.Subservice;
 import ir.maedehhz.final_project_spring.model.enums.OrderStatus;
 import ir.maedehhz.final_project_spring.repository.OrderRepository;
 import ir.maedehhz.final_project_spring.service.customer.CustomerServiceImpl;
 import ir.maedehhz.final_project_spring.service.expert.ExpertServiceImpl;
 import ir.maedehhz.final_project_spring.service.subservice.SubserviceServiceImpl;
-import ir.maedehhz.final_project_spring.service.user_subservice.User_SubserviceServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +34,6 @@ public class OrderServiceImpl implements OrderService{
     private final SubserviceServiceImpl subserviceService;
 
     private final CustomerServiceImpl customerService;
-
-    private final User_SubserviceServiceImpl userSubserviceService;
 
     @Override
     public Order save(Order order, long subserviceId, long customerId) {
@@ -76,9 +76,9 @@ public class OrderServiceImpl implements OrderService{
             throw new NotFoundException("No order found for this subservice!");
 
         List<OrderFindAllResponse> allResponses = new ArrayList<>();
-        all.forEach(order -> {
-            allResponses.add(OrderMapper.INSTANCE.modelToOrderFindAllResponse(order));
-        });
+        all.forEach(order ->
+            allResponses.add(OrderMapper.INSTANCE.modelToOrderFindAllResponse(order))
+        );
 
         return allResponses;
     }
