@@ -1,7 +1,10 @@
 package ir.maedehhz.final_project_spring.service.suggestion;
 
 import ir.maedehhz.final_project_spring.exception.*;
-import ir.maedehhz.final_project_spring.model.*;
+import ir.maedehhz.final_project_spring.model.Expert;
+import ir.maedehhz.final_project_spring.model.Order;
+import ir.maedehhz.final_project_spring.model.Subservice;
+import ir.maedehhz.final_project_spring.model.Suggestion;
 import ir.maedehhz.final_project_spring.model.enums.OrderStatus;
 import ir.maedehhz.final_project_spring.repository.SuggestionRepository;
 import ir.maedehhz.final_project_spring.service.expert.ExpertServiceImpl;
@@ -35,7 +38,7 @@ public class SuggestionServiceImpl implements SuggestionService{
         suggestion.setOrder(order);
         suggestion.setRegisterDate(LocalDate.now());
 
-        List<Subservice> subservice = getAllSubserviceOfExpert(suggestion.getExpert().getId());
+        List<Subservice> subservice = user_subserviceService.findAllByExpert_Id(expert.getId());
         List<Long> subserviceIds = new ArrayList<>();
         for (Subservice sub : subservice) {
             subserviceIds.add(sub.getId());
@@ -103,15 +106,5 @@ public class SuggestionServiceImpl implements SuggestionService{
         if (!repository.existsByExpertAndOrder(expert, order))
             throw new NotFoundException("Noting found!");
         return repository.findByExpertAndOrder(expert, order);
-    }
-
-    private List<Subservice> getAllSubserviceOfExpert(long expertId){
-        List<User_SubService> allByExpertId = user_subserviceService.findAllByExpert_Id(expertId);
-        List<Subservice> subservice = new ArrayList<>();
-        for (User_SubService userSubService : allByExpertId) {
-            subservice.add(userSubService.getSubservice());
-        }
-
-        return subservice;
     }
 }
