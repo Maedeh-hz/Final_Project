@@ -86,10 +86,10 @@ public class ExpertController {
         return userSubserviceService.findAllByExpert_Id(expertId);
     }
 
-    @GetMapping("/find-all-orders-by-subservice")
+    @GetMapping("/find-all-orders-by-subservice-waiting-for-suggestion")
     @ResponseStatus(HttpStatus.FOUND)
     public List<OrderFindAllResponse> findAllOrdersByExpertSubservice(@RequestBody long subserviceId){
-        return orderService.findAllBySubservice(subserviceId);
+        return orderService.findAllBySubserviceWaitingForExpertSuggestion(subserviceId);
     }
 
 
