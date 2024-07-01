@@ -52,20 +52,15 @@ public class User_SubserviceServiceImpl implements User_SubserviceService{
     }
 
     @Override
-    public List<User_SubService> findAllByExpert_Id(long expertId) {
-        return repository.findAllByExpert_Id(expertId);
-    }
+    public List<Subservice> findAllByExpert_Id(long expertId) {
+        List<Subservice> subservices = new ArrayList<>();
+        List<User_SubService> all = repository.findAllByExpert_Id(expertId);
+        if (all.isEmpty())
+            throw new NotFoundException("No subservices found!");
 
-    @Override
-    public List<Expert> findAllBySubservice(long subserviceId) {
-        Subservice subservice = subserviceService.findById(subserviceId);
-        List<User_SubService> all = repository.findAllBySubservice(subservice);
-        List<Expert> allExperts = new ArrayList<>();
-        all.forEach(userSubService -> allExperts.add(userSubService.getExpert()));
-        if (allExperts.isEmpty())
-            throw new NotFoundException("No Expert founded for this Subservice! ");
+        all.forEach(userSubService -> subservices.add(userSubService.getSubservice()));
 
-        return allExperts;
+        return subservices;
     }
 
 }
