@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findAllBySubservice_Id(Long subservice_id);
+    List<Order> findAllBySubservice_IdAndStatus(Long subservice_id, OrderStatus status);
 
     List<Order> findAllByStatus(OrderStatus status);
 

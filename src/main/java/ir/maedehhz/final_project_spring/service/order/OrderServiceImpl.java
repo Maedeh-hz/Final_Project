@@ -69,8 +69,8 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public List<OrderFindAllResponse> findAllBySubservice(long subserviceId) {
-        List<Order> all = repository.findAllBySubservice_Id(subserviceId);
+    public List<OrderFindAllResponse> findAllBySubserviceWaitingForExpertSuggestion(long subserviceId) {
+        List<Order> all = repository.findAllBySubservice_IdAndStatus(subserviceId, OrderStatus.WAITING_FOR_EXPERT_SUGGESTION);
 
         if (all.isEmpty())
             throw new NotFoundException("No order found for this subservice!");

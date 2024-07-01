@@ -10,7 +10,7 @@ public interface OrderService {
     Order findById(long id);
     Order updatingOrderSuggestion(Order order);
     Order updateStatusToWaitingForExpertToVisit(long orderId);
-    List<OrderFindAllResponse> findAllBySubservice(long subserviceId);
+    List<OrderFindAllResponse> findAllBySubserviceWaitingForExpertSuggestion(long subserviceId);
     List<Order> findAllByStatusWaitingForSuggestion();
     Order updateStatusToStarted(long orderId);
     Order updateStatusToDone(long orderId);
