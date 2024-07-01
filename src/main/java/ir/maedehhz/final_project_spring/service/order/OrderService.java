@@ -1,5 +1,6 @@
 package ir.maedehhz.final_project_spring.service.order;
 
+import ir.maedehhz.final_project_spring.dto.order.OrderFindAllResponse;
 import ir.maedehhz.final_project_spring.model.Order;
 
 import java.util.List;
@@ -9,7 +10,7 @@ public interface OrderService {
     Order findById(long id);
     Order updatingOrderSuggestion(Order order);
     Order updateStatusToWaitingForExpertToVisit(long orderId);
-    List<Order> findAllByExpertsSubservice(long expertId);
+    List<OrderFindAllResponse> findAllBySubservice(long subserviceId);
     List<Order> findAllByStatusWaitingForSuggestion();
     Order updateStatusToStarted(long orderId);
     Order updateStatusToDone(long orderId);

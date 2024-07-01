@@ -1,8 +1,10 @@
 package ir.maedehhz.final_project_spring.service.order;
 
+import ir.maedehhz.final_project_spring.dto.order.OrderFindAllResponse;
 import ir.maedehhz.final_project_spring.exception.IneligibleObjectException;
 import ir.maedehhz.final_project_spring.exception.InvalidDateForOrderException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
+import ir.maedehhz.final_project_spring.mapper.order.OrderMapper;
 import ir.maedehhz.final_project_spring.model.*;
 import ir.maedehhz.final_project_spring.model.enums.OrderStatus;
 import ir.maedehhz.final_project_spring.repository.OrderRepository;
@@ -67,22 +69,18 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public List<Order> findAllByExpertsSubservice(long expertId) {
-        Expert expert = expertService.findById(expertId);
+    public List<OrderFindAllResponse> findAllBySubservice(long subserviceId) {
+        List<Order> all = repository.findAllBySubservice_Id(subserviceId);
 
-        List<User_SubService> allByExpertId = userSubserviceService.findAllByExpert_Id(expert.getId());
-        List<Subservice> subservices = new ArrayList<>();
-        allByExpertId.forEach(userSubService ->
-                subservices.add(userSubService.getSubservice()));
+        if (all.isEmpty())
+            throw new NotFoundException("No order found for this subservice!");
 
-        List<Order> orders = new ArrayList<>();
-        for (Subservice subservice : subservices) {
-            orders.addAll(repository.findAllBySubservice(subservice));
-        }
-        if (orders.isEmpty())
-            throw new NotFoundException("No order found for your specialist!");
+        List<OrderFindAllResponse> allResponses = new ArrayList<>();
+        all.forEach(order -> {
+            allResponses.add(OrderMapper.INSTANCE.modelToOrderFindAllResponse(order));
+        });
 
-        return orders;
+        return allResponses;
     }
 
     @Override
