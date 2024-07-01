@@ -1,5 +1,6 @@
 package ir.maedehhz.final_project_spring.mapper.order;
 
+import ir.maedehhz.final_project_spring.dto.order.OrderFindAllResponse;
 import ir.maedehhz.final_project_spring.dto.order.OrderSaveRequest;
 import ir.maedehhz.final_project_spring.dto.order.OrderSaveResponse;
 import ir.maedehhz.final_project_spring.model.Order;
@@ -12,4 +13,6 @@ public interface OrderMapper {
 
     Order orderSaveRequestToModel(OrderSaveRequest request);
     OrderSaveResponse modelToOrderSaveResponse(Order order);
+
+    OrderFindAllResponse modelToOrderFindAllResponse(Order order);
 }

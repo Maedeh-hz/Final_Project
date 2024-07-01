@@ -8,6 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface ExpertMapper {
+
     ExpertMapper INSTANCE = Mappers.getMapper(ExpertMapper.class);
 
     Expert expertSaveRequestToModel(ExpertSaveRequest request);
