@@ -5,10 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SoftDelete;
 
@@ -26,6 +23,8 @@ public class Expert extends User {
     private ExpertStatus status;
 
     private Double score;
+
+    private String expertise;
 
     @Column(name = "image_data", columnDefinition = "bytea")
     private byte[] image;
