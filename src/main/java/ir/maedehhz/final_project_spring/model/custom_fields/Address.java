@@ -29,11 +29,4 @@ public class Address {
     private String alley;
 
     private Integer no;
-
-    public Address(String province, String street, String alley, Integer no) {
-        this.province = province;
-        this.street = street;
-        this.alley = alley;
-        this.no = no;
-    }
 }
