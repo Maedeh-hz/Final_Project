@@ -108,4 +108,12 @@ public class AdminController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/find-expert-by-id")
+    public ResponseEntity<ExpertSaveResponse> findExpertById(@RequestBody long expertId){
+        Expert expert = expertService.findById(expertId);
+
+        ExpertSaveResponse response = ExpertMapper.INSTANCE.modelToExpertSaveResponse(expert);
+        return new ResponseEntity<>(response, HttpStatus.FOUND);
+    }
+
 }
