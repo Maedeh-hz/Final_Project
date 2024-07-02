@@ -1,6 +1,5 @@
 package ir.maedehhz.final_project_spring.service.user_subservice;
 
-import ir.maedehhz.final_project_spring.model.Expert;
 import ir.maedehhz.final_project_spring.model.Subservice;
 import ir.maedehhz.final_project_spring.model.User_SubService;
 

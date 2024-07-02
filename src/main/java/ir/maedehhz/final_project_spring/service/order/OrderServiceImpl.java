@@ -1,9 +1,7 @@
 package ir.maedehhz.final_project_spring.service.order;
 
 import ir.maedehhz.final_project_spring.dto.order.OrderFindAllResponse;
-import ir.maedehhz.final_project_spring.exception.IneligibleObjectException;
-import ir.maedehhz.final_project_spring.exception.InvalidDateForOrderException;
-import ir.maedehhz.final_project_spring.exception.NotFoundException;
+import ir.maedehhz.final_project_spring.exception.*;
 import ir.maedehhz.final_project_spring.mapper.order.OrderMapper;
 import ir.maedehhz.final_project_spring.model.Customer;
 import ir.maedehhz.final_project_spring.model.Expert;
@@ -43,7 +41,7 @@ public class OrderServiceImpl implements OrderService{
         order.setSubservice(subservice);
 
         if (order.getToDoDateAndTime().isBefore(LocalDateTime.now()))
-            throw new InvalidDateForOrderException("The entered date is before today!");
+            throw new DateMismatchException("The entered date is before today!");
 
         order.setRegisterDate(LocalDate.now());
         order.setStatus(OrderStatus.WAITING_FOR_EXPERT_SUGGESTION);
@@ -120,9 +118,9 @@ public class OrderServiceImpl implements OrderService{
     public void reduce1ScoreFromExpertPerHour(long orderId) {
         Order order = findById(orderId);
         if (!order.getToDoDateAndTime().isBefore(LocalDateTime.now()))
-            throw new IneligibleObjectException("Its not the orders date!");
+            throw new DateMismatchException("Its not the orders date!");
         if (!order.getStatus().equals(OrderStatus.WAITING_FOR_EXPERT_TO_VISIT))
-            throw new IneligibleObjectException("Order is not waiting for expert!");
+            throw new InvalidRequestException("Order is not waiting for expert!");
 
         long between = ChronoUnit.HOURS.between(order.getToDoDateAndTime(), LocalDateTime.now());
         double newScore;

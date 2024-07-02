@@ -1,8 +1,8 @@
 package ir.maedehhz.final_project_spring.service.subservice;
 
+import ir.maedehhz.final_project_spring.exception.CouldNotUpdateException;
 import ir.maedehhz.final_project_spring.exception.DuplicateInfoException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
-import ir.maedehhz.final_project_spring.exception.SameInfoException;
 import ir.maedehhz.final_project_spring.model.Subservice;
 import ir.maedehhz.final_project_spring.repository.SubserviceRepository;
 import ir.maedehhz.final_project_spring.service.service.ServiceServiceImpl;
@@ -38,7 +38,7 @@ public class SubserviceServiceImpl implements SubserviceService{
     public Subservice updateDescription(long id, String newDescription) {
         Subservice byId = findById(id);
         if (byId.getDescription().equals(newDescription))
-            throw new SameInfoException("The description of subservice is already this!");
+            throw new CouldNotUpdateException("The description of subservice is already this!");
         byId.setDescription(newDescription);
         return repository.save(byId);
     }
@@ -47,7 +47,7 @@ public class SubserviceServiceImpl implements SubserviceService{
     public Subservice updateBasePrice(long id, double newBasePrice) {
         Subservice byId = findById(id);
         if (byId.getBasePrice().equals(newBasePrice))
-            throw new SameInfoException("The base price of subservice is already this!");
+            throw new CouldNotUpdateException("The base price of subservice is already this!");
         byId.setBasePrice(newBasePrice);
         return repository.save(byId);
     }

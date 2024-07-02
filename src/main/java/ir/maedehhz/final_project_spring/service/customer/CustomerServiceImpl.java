@@ -18,13 +18,13 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public Customer save(Customer customer) {
-        if (repository.existsByUsername(customer.getUsername()))
+        if (repository.existsByUsername(customer.getEmail()))
             throw new DuplicateInfoException
-                    (String.format("User with username %s exists!", customer.getUsername()));
+                    (String.format("User with username %s exists!", customer.getEmail()));
         if (!validatePass(customer.getPassword()))
-            throw new InvalidPasswordException("Users entrance password is invalid!");
+            throw new InvalidInputException("Users entrance password is invalid!");
         if (!validateEmail(customer.getEmail()))
-            throw new InvalidEmailException("Users entrance email is invalid!");
+            throw new InvalidInputException("Users entrance email is invalid!");
 
         customer.setUsername(customer.getEmail());
         customer.setRegistrationDate(LocalDate.now());
@@ -43,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService{
         if (!newPass.equals(newPass2))
             throw new PasswordMismatchException("The first and second passwords are not the same!");
         if (!validatePass(newPass))
-            throw new InvalidPasswordException("Invalid password!");
+            throw new InvalidInputException("Invalid password!");
         if (validatePass(newPass))
             customer.setPassword(newPass);
         return repository.save(customer);

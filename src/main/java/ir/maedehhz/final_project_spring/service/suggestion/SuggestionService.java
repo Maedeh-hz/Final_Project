@@ -18,5 +18,4 @@ public interface SuggestionService {
 
     Suggestion findById(long id);
 
-    Suggestion findByExpertAndOrder(Expert expert, Order order);
 }

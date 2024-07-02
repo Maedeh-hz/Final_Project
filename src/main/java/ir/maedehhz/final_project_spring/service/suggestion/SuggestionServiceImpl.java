@@ -45,13 +45,13 @@ public class SuggestionServiceImpl implements SuggestionService{
         }
 
         if (!subserviceIds.contains(suggestion.getOrder().getSubservice().getId()))
-            throw new NotYourBusinessException("You are not under service of this orders Subservice.");
+            throw new InvalidRequestException("You are not under service of this orders Subservice.");
 
         if (!suggestion.getOrder().getStatus().equals(OrderStatus.WAITING_FOR_EXPERT_SUGGESTION))
-            throw new NotYourBusinessException("Order is not waiting for any suggestions!");
+            throw new InvalidRequestException("Order is not waiting for any suggestions!");
 
         if (suggestion.getPrice() < suggestion.getOrder().getSubservice().getBasePrice())
-            throw new PriceUnderRangeException("Suggesting price from expert is less than Subservice base price!");
+            throw new InvalidInputException("Suggesting price from expert is less than Subservice base price!");
 
         if (suggestion.getRegisterDate().isBefore(LocalDate.now()))
             throw new DateMismatchException("The entrance Date is invalid!");
@@ -101,10 +101,4 @@ public class SuggestionServiceImpl implements SuggestionService{
                 new NotFoundException(String.format("Suggestion with id %s couldn't be found.", id)));
     }
 
-    @Override
-    public Suggestion findByExpertAndOrder(Expert expert, Order order) {
-        if (!repository.existsByExpertAndOrder(expert, order))
-            throw new NotFoundException("Noting found!");
-        return repository.findByExpertAndOrder(expert, order);
-    }
 }

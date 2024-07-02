@@ -22,15 +22,15 @@ public class ExpertServiceImpl implements ExpertService{
 
     @Override
     public Expert save(Expert expert, String imagePath) {
-        if (repository.existsByUsername(expert.getUsername()))
+        if (repository.existsByUsername(expert.getEmail()))
             throw new DuplicateInfoException
-                    (String.format("User with username %s exists!", expert.getUsername()));
+                    (String.format("User with username %s exists!", expert.getEmail()));
 
         if (!validatePass(expert.getPassword()))
-            throw new InvalidPasswordException("Users entrance password is invalid!");
+            throw new InvalidInputException("Users entrance password is invalid!");
 
         if (!validateEmail(expert.getEmail()))
-            throw new InvalidEmailException("Users entrance email is invalid!");
+            throw new InvalidInputException("Users entrance email is invalid!");
 
         if (!imagePath.endsWith(".png"))
             throw new ImageFormatException("The image format should be in PNG!");
@@ -65,7 +65,7 @@ public class ExpertServiceImpl implements ExpertService{
         if (!newPass.equals(newPass2))
             throw new PasswordMismatchException("The first and second passwords are not the same!");
         if (!validatePass(newPass))
-            throw new InvalidPasswordException("Invalid password!");
+            throw new InvalidInputException("Invalid password!");
         if (validatePass(newPass))
             expert.setPassword(newPass);
         return repository.save(expert);
