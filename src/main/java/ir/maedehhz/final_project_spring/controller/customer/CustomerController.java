@@ -1,5 +1,7 @@
 package ir.maedehhz.final_project_spring.controller.customer;
 
+import cn.apiclub.captcha.Captcha;
+import ir.maedehhz.final_project_spring.dto.PaymentSaveRequest;
 import ir.maedehhz.final_project_spring.dto.comment.CommentSaveRequest;
 import ir.maedehhz.final_project_spring.dto.comment.CommentSaveResponse;
 import ir.maedehhz.final_project_spring.dto.customer.CustomerPasswordUpdateRequest;
@@ -11,11 +13,13 @@ import ir.maedehhz.final_project_spring.mapper.comment.CommentMapper;
 import ir.maedehhz.final_project_spring.mapper.customer.CustomerMapper;
 import ir.maedehhz.final_project_spring.mapper.order.OrderMapper;
 import ir.maedehhz.final_project_spring.model.*;
+import ir.maedehhz.final_project_spring.service.card.CardServiceImpl;
 import ir.maedehhz.final_project_spring.service.comment.CommentServiceImpl;
 import ir.maedehhz.final_project_spring.service.customer.CustomerServiceImpl;
 import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
 import ir.maedehhz.final_project_spring.service.service.ServiceServiceImpl;
 import ir.maedehhz.final_project_spring.service.suggestion.SuggestionServiceImpl;
+import ir.maedehhz.final_project_spring.utility.CaptchaUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +37,7 @@ public class CustomerController {
     private final ServiceServiceImpl serviceService;
     private final CommentServiceImpl commentService;
     private final SuggestionServiceImpl suggestionService;
+    private final CardServiceImpl cardService;
 
     @PostMapping("/save-customer")
     public ResponseEntity<CustomerSaveResponse> saveCustomer(@RequestBody CustomerSaveRequest request){
@@ -111,5 +116,21 @@ public class CustomerController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping( "/payment")
+    public ResponseEntity<Card> payment(@ModelAttribute PaymentSaveRequest request){
+        Card card = Card.builder().cardNumber(request.cardNumber())
+                .cvv2(request.cvv2())
+                .expirationDate(request.expirationDate()).build();
+        Card saved = cardService.save(card, request.orderId());
+
+        return new ResponseEntity<>(saved, HttpStatus.OK);
+    }
+
+    private void getCaptcha(Card card){
+        Captcha captcha = CaptchaUtil.createCaptcha(240, 70);
+        card.setHiddenCaptcha(captcha.getAnswer());
+        card.setCaptcha("");
+        card.setRealCaptcha(CaptchaUtil.encodeCaptcha(captcha));
+    }
 
 }
