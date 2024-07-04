@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fc9292;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            max-width: 465px;
+            padding: 60px;
+            background-color: #ffa91e;
+            border-radius: 20px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        input[type="submit"] {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #470a03;
+        }
+        #price {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #8b0000;
+            border-radius: 10px;
+        }
+        #countdown {
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h2>Banking Portal Spring</h2>
+    <h3 id="price">Price: $100.00</h3>
+    <form action="http://localhost:8080/customer/payment" method="post">
+        <label for="orderId">Order ID:</label>
+        <input type="text" id="orderId" name="orderId" required>
+        <br>
+        <label for="cardNumber">Card Number (16 digits):</label>
+        <input type="text" id="cardNumber" name="cardNumber" pattern="\d{16}" required>
+        <br>
+        <label for="cvv2">CVV2 (4 digits):</label>
+        <input type="password" id="cvv2" name="cvv2" pattern="\d{3,4}" required>
+        <br>
+        <label for="expirationDate">Expiration Date:</label>
+        <input type="text" id="expirationDate" name="expirationDate" placeholder="YYYY-MM" required>
+        <br>
+<!--        <label for="captcha">Captcha:</label>-->
+<!--        <input type="text" id="captcha" name="captcha" required>-->
+<!--        <br>-->
+        <button type="submit" value="Submit">Submit</button>
+    </form>
+</div>
+<script>
+    const timerElement = document.getElementById('timer');
+    let remainingTime = 600;
+
+    function updateTimer() {
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        remainingTime--;
+        if (remainingTime >= 0) {
+            setTimeout(updateTimer, 1000);
+        } else {
+            alert('Session expired. Please log in again.');
+        }
+    }
+
+    updateTimer();
+</script>
+</body>
+</html>
