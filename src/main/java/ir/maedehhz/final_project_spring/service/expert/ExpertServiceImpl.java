@@ -1,16 +1,23 @@
 package ir.maedehhz.final_project_spring.service.expert;
 
+import ir.maedehhz.final_project_spring.email.EmailService;
 import ir.maedehhz.final_project_spring.exception.*;
 import ir.maedehhz.final_project_spring.model.Expert;
 import ir.maedehhz.final_project_spring.model.enums.ExpertStatus;
+import ir.maedehhz.final_project_spring.model.enums.Role;
 import ir.maedehhz.final_project_spring.repository.ExpertRepository;
+import ir.maedehhz.final_project_spring.token.ConfirmationToken;
+import ir.maedehhz.final_project_spring.token.service.TokenServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +26,9 @@ import java.util.regex.Pattern;
 public class ExpertServiceImpl implements ExpertService{
 
     private final ExpertRepository repository;
+//    private final BCryptPasswordEncoder passwordEncoder;
+    private final TokenServiceImpl tokenService;
+    private final EmailService emailService;
 
     @Override
     public Expert save(Expert expert, String imagePath) {
@@ -42,7 +52,23 @@ public class ExpertServiceImpl implements ExpertService{
 
         expert.setUsername(expert.getEmail());
         expert.setRegistrationDate(LocalDate.now());
-        return repository.save(expert);
+        expert.setRole(Role.ROLE_EXPERT);
+//        expert.setPassword(passwordEncoder.encode(expert.getPassword()));
+        Expert saved = repository.save(expert);
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                saved
+        );
+        tokenService.save(confirmationToken);
+        String link = "http://localhost:8080/api/v1/customer/confirm-email?token=" + token;
+        emailService.send(
+                saved.getEmail(),
+                EmailService.buildEmail(saved.getFirstName(), link)
+        );
+        return saved;
     }
 
     @Override
@@ -55,6 +81,32 @@ public class ExpertServiceImpl implements ExpertService{
         if (!repository.existsByUsername(username))
             throw new NotFoundException(String.format("User with username %s not found!", username));
         return repository.findByUsername(username);
+    }
+
+    @Override
+    public void enableExpert(String username) {
+        Expert expert = findByUsername(username);
+        expert.setEnabled(true);
+        repository.save(expert);
+    }
+
+    @Transactional
+    public String confirmToken(String token) {
+        ConfirmationToken confirmationToken = tokenService.findByToken(token);
+
+        if (confirmationToken.getConfirmedAt() != null) {
+            throw new IllegalStateException("email already confirmed");
+        }
+
+        LocalDateTime expiredAt = confirmationToken.getExpiresAt();
+
+        if (expiredAt.isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("token expired");
+        }
+
+        tokenService.confirmedAt(token);
+        enableExpert(confirmationToken.getUser().getEmail());
+        return "confirmed";
     }
 
     @Override
