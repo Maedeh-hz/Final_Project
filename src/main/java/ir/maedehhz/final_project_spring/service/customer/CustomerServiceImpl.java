@@ -11,6 +11,7 @@ import ir.maedehhz.final_project_spring.repository.CustomerRepository;
 import ir.maedehhz.final_project_spring.token.ConfirmationToken;
 import ir.maedehhz.final_project_spring.token.service.TokenServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     private final CustomerRepository repository;
     private final TokenServiceImpl tokenService;
-//    private final BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
     @Override
@@ -42,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService{
         customer.setUsername(customer.getEmail());
         customer.setRegistrationDate(LocalDate.now());
         customer.setRole(Role.ROLE_CUSTOMER);
-//        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         Customer saved = repository.save(customer);
 
         String token = UUID.randomUUID().toString();

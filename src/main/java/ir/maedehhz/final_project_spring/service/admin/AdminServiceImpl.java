@@ -6,6 +6,7 @@ import ir.maedehhz.final_project_spring.model.Admin;
 import ir.maedehhz.final_project_spring.model.enums.Role;
 import ir.maedehhz.final_project_spring.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 public class AdminServiceImpl implements AdminService {
 
     private final AdminRepository repository;
-//    private final BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public Admin save(Admin admin) {
@@ -24,7 +25,7 @@ public class AdminServiceImpl implements AdminService {
                     (String.format("User with username %s exists!", admin.getUsername()));
         admin.setRegistrationDate(LocalDate.now());
         admin.setRole(Role.ROLE_ADMIN);
-//        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         return repository.save(admin);
     }
 

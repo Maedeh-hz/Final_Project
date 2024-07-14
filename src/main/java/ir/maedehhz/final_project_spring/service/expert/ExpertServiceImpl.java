@@ -9,6 +9,7 @@ import ir.maedehhz.final_project_spring.repository.ExpertRepository;
 import ir.maedehhz.final_project_spring.token.ConfirmationToken;
 import ir.maedehhz.final_project_spring.token.service.TokenServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ import java.util.regex.Pattern;
 public class ExpertServiceImpl implements ExpertService{
 
     private final ExpertRepository repository;
-//    private final BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
     private final TokenServiceImpl tokenService;
     private final EmailService emailService;
 
@@ -53,7 +54,7 @@ public class ExpertServiceImpl implements ExpertService{
         expert.setUsername(expert.getEmail());
         expert.setRegistrationDate(LocalDate.now());
         expert.setRole(Role.ROLE_EXPERT);
-//        expert.setPassword(passwordEncoder.encode(expert.getPassword()));
+        expert.setPassword(passwordEncoder.encode(expert.getPassword()));
         Expert saved = repository.save(expert);
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(
