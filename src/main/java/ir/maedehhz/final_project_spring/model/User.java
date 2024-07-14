@@ -1,5 +1,6 @@
 package ir.maedehhz.final_project_spring.model;
 
+import ir.maedehhz.final_project_spring.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,9 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User
+//        implements UserDetails
+{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -25,6 +28,9 @@ public class User {
 
     @Column(insertable = false, updatable = false)
     private String dtype;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     private String firstName;
 
@@ -41,4 +47,33 @@ public class User {
     private Wallet wallet;
 
     private LocalDate registrationDate;
+
+    private boolean locked = false;
+
+    private boolean enabled = false;
+
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return List.of(new SimpleGrantedAuthority(this.role.name()));
+//    }
+//
+//    @Override
+//    public boolean isAccountNonExpired() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isAccountNonLocked() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isCredentialsNonExpired() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isEnabled() {
+//        return true;
+//    }
 }
