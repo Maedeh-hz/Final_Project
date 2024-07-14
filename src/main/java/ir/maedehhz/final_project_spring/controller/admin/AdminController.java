@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin")
+@RequestMapping("/api/v1/admin")
 public class AdminController {
     private final AdminServiceImpl adminService;
     private final ExpertServiceImpl expertService;
@@ -36,6 +36,7 @@ public class AdminController {
     private final User_SubserviceServiceImpl userSubserviceService;
 
     @PostMapping("/save-admin")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AdminSaveResponse> saveAdmin(@RequestBody AdminSaveRequest request){
         Admin admin = AdminMapper.INSTANCE.adminSaveRequestToModel(request);
         Admin saved = adminService.save(admin);
@@ -45,6 +46,7 @@ public class AdminController {
     }
 
     @PostMapping("/save-service")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ServiceSaveResponse> saveService(@RequestBody ServiceSaveRequest request){
         Service service = ServiceMapper.INSTANCE.serviceSaveRequestToModel(request);
 
@@ -54,6 +56,7 @@ public class AdminController {
     }
 
     @PostMapping("/save-subservice")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SubserviceSaveResponse> saveSubservice(@RequestBody SubserviceSaveRequest request){
         Subservice subservice = SubserviceMapper.INSTANCE.subserviceSaveRequestToModel(request);
 
@@ -63,6 +66,7 @@ public class AdminController {
     }
 
     @PatchMapping("/verifying-expert")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExpertSaveResponse> verifyingExpert(@RequestBody long expertId){
         Expert updated = expertService.updateStatusToVerified(expertId);
 
@@ -71,6 +75,7 @@ public class AdminController {
     }
 
     @PatchMapping("/updating-expert-status-unverified")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExpertSaveResponse> unverifyingExpert(@RequestBody long expertId){
         Expert updated = expertService.updateStatusToUnverified(expertId);
 
@@ -79,6 +84,7 @@ public class AdminController {
     }
 
     @PostMapping("/add-expert-to-subservice")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User_SubService> addExpertToSubservice(@RequestBody ExpertToSubserviceRequest request){
         User_SubService saved = userSubserviceService.save(request.expertId(), request.subserviceId());
 
@@ -86,6 +92,7 @@ public class AdminController {
     }
 
     @PatchMapping("/remove-expert-from-subservice")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Boolean> removeExpertFromSubservice(@RequestBody ExpertToSubserviceRequest request){
         boolean removed = userSubserviceService.remove(request.subserviceId(), request.expertId());
 
@@ -93,6 +100,7 @@ public class AdminController {
     }
 
     @PatchMapping("/update-subservice-description")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SubserviceSaveResponse> updateSubserviceDescription(@RequestBody SubserviceDescUpdateRequest request){
         Subservice updated = subserviceService.updateDescription(request.id(), request.newDescription());
 
@@ -101,6 +109,7 @@ public class AdminController {
     }
 
     @PatchMapping("/update-subservice-base-price")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SubserviceSaveResponse> updateSubserviceBasePrice(@RequestBody SubserviceBasePriceUpdateRequest request){
         Subservice updated = subserviceService.updateBasePrice(request.id(), request.newBasePrice());
 
@@ -109,7 +118,8 @@ public class AdminController {
     }
 
     @GetMapping("/find-expert-by-id")
-    public ResponseEntity<ExpertSaveResponse> findExpertById(@RequestBody long expertId){
+//    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ExpertSaveResponse> findExpertById(@RequestParam long expertId){
         Expert expert = expertService.findById(expertId);
 
         ExpertSaveResponse response = ExpertMapper.INSTANCE.modelToExpertSaveResponse(expert);

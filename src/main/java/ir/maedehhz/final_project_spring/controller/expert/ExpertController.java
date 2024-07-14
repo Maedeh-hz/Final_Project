@@ -28,7 +28,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/expert")
+@RequestMapping("/api/v1/expert")
 public class ExpertController {
 
     private final ExpertServiceImpl expertService;
@@ -38,6 +38,7 @@ public class ExpertController {
     private final User_SubserviceServiceImpl userSubserviceService;
 
     @PostMapping("/save-expert")
+//    @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<ExpertSaveResponse> saveExpert(@RequestBody ExpertSaveRequest request){
         Expert expert = ExpertMapper.INSTANCE.expertSaveRequestToModel(request);
 
@@ -51,7 +52,15 @@ public class ExpertController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PatchMapping("/confirm-email")
+//    @PreAuthorize("hasRole('EXPERT')")
+    public ResponseEntity<String> confirmEmail(@RequestParam(name = "token") String token){
+        String confirmToken = expertService.confirmToken(token);
+        return new ResponseEntity<>(confirmToken, HttpStatus.OK);
+    }
+
     @PatchMapping("/update-expert-password")
+//    @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<ExpertSaveResponse> updatePasswordForExpert(@RequestBody ExpertPasswordUpdateRequest request){
         Expert updated = expertService.updatePassword(request.userId(), request.previousPass(), request.newPass(), request.newPass2());
 
@@ -60,6 +69,7 @@ public class ExpertController {
     }
 
     @PostMapping("/register-suggestion")
+//    @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<SuggestionSaveResponse> saveSuggestion(@RequestBody SuggestionSaveRequest request){
         Suggestion suggestion = SuggestionMapper.INSTANCE.suggestionSaveRequestToModel(request);
         Suggestion saved = suggestionService.registerSuggestionForOrder(suggestion, request.expertId(), request.orderId());
@@ -69,6 +79,7 @@ public class ExpertController {
     }
 
     @GetMapping("view-all-orders-waiting-for-suggestion")
+//    @PreAuthorize("hasRole('EXPERT')")
     public List<Order> findAllOrdersByStatus(){
         return orderService.findAllByStatusWaitingForSuggestion();
     }
@@ -82,11 +93,13 @@ public class ExpertController {
 
     @GetMapping("/find-all-subservices-of-expert")
     @ResponseStatus(HttpStatus.FOUND)
+//    @PreAuthorize("hasRole('EXPERT')")
     public List<Subservice> findAllSubservicesOfExpert(@RequestBody long expertId){
         return userSubserviceService.findAllByExpert_Id(expertId);
     }
 
     @GetMapping("/find-all-orders-by-subservice-waiting-for-suggestion")
+//    @PreAuthorize("hasRole('EXPERT')")
     @ResponseStatus(HttpStatus.FOUND)
     public List<OrderFindAllResponse> findAllOrdersByExpertSubservice(@RequestBody long subserviceId){
         return orderService.findAllBySubserviceWaitingForExpertSuggestion(subserviceId);

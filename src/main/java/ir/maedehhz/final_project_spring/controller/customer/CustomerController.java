@@ -29,7 +29,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/customer")
+@RequestMapping("/api/v1/customer")
 public class CustomerController {
 
     private final CustomerServiceImpl customerService;
@@ -48,7 +48,15 @@ public class CustomerController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PatchMapping("/confirm-email")
+//    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<String> confirmEmail(@RequestParam(name = "token") String token){
+        String confirmToken = customerService.confirmToken(token);
+        return new ResponseEntity<>(confirmToken, HttpStatus.OK);
+    }
+
     @PatchMapping("/update-customer-password")
+//    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CustomerSaveResponse> updatePasswordForCustomer(@RequestBody CustomerPasswordUpdateRequest request){
         Customer updated = customerService.updatePassword(request.userId(), request.previousPass(), request.newPass(), request.newPass2());
 
@@ -57,6 +65,7 @@ public class CustomerController {
     }
 
     @PostMapping("/register-order")
+//    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<OrderSaveResponse> saveOrder(@RequestBody OrderSaveRequest request){
         Order order = OrderMapper.INSTANCE.orderSaveRequestToModel(request);
 
@@ -66,12 +75,14 @@ public class CustomerController {
     }
 
     @GetMapping("find-all-service")
+//    @PreAuthorize("hasRole('CUSTOMER')")
     @ResponseStatus(HttpStatus.FOUND)
     public List<Service> findAllService(){
         return serviceService.findAll();
     }
 
     @PostMapping("/save-comment")
+//    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CommentSaveResponse> saveComment(@RequestBody CommentSaveRequest request){
         Comment comment = CommentMapper.INSTANCE.commentSaveRequestToModel(request);
 
@@ -81,18 +92,21 @@ public class CustomerController {
     }
 
     @GetMapping("/view-all-suggestion-by-expert-score")
+//    @PreAuthorize("hasRole('CUSTOMER')")
     @ResponseStatus(HttpStatus.FOUND)
     public List<Suggestion> findAllSuggestionByExpertScore(){
         return suggestionService.viewAllByExpertScore();
     }
 
     @GetMapping("/view-all-suggestion-by-price")
+//    @PreAuthorize("hasRole('CUSTOMER')")
     @ResponseStatus(HttpStatus.FOUND)
     public List<Suggestion> findAllSuggestionByPrice(){
         return suggestionService.viewAllByPrice();
     }
 
     @PatchMapping("/choosing-suggestion")
+//    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<OrderSaveResponse> choosingSuggestionForAnOrder(@RequestBody long suggestionId){
         Order updated = suggestionService.choosingExpert(suggestionId);
 
@@ -101,7 +115,8 @@ public class CustomerController {
     }
 
     @PatchMapping("/update-order-status-to-started")
-    public ResponseEntity<OrderSaveResponse> updatingOrderStatusToStarted(@RequestBody long orderId){
+//    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<OrderSaveResponse> updatingOrderStatusToStarted(@RequestParam long orderId){
         Order updated = orderService.updateStatusToStarted(orderId);
 
         OrderSaveResponse response = OrderMapper.INSTANCE.modelToOrderSaveResponse(updated);
@@ -109,6 +124,7 @@ public class CustomerController {
     }
 
     @PatchMapping("/update-order-status-to-done")
+//    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<OrderSaveResponse> updatingOrderStatusToDone(@RequestBody long orderId){
         Order updated = orderService.updateStatusToDone(orderId);
 
@@ -117,6 +133,7 @@ public class CustomerController {
     }
 
     @PostMapping( "/payment")
+//    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Card> payment(@ModelAttribute PaymentSaveRequest request){
         Card card = Card.builder().cardNumber(request.cardNumber())
                 .cvv2(request.cvv2())
