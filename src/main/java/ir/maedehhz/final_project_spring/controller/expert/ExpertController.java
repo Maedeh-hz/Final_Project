@@ -21,6 +21,7 @@ import ir.maedehhz.final_project_spring.service.user_subservice.User_SubserviceS
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -38,7 +39,6 @@ public class ExpertController {
     private final User_SubserviceServiceImpl userSubserviceService;
 
     @PostMapping("/save-expert")
-//    @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<ExpertSaveResponse> saveExpert(@RequestBody ExpertSaveRequest request){
         Expert expert = ExpertMapper.INSTANCE.expertSaveRequestToModel(request);
 
@@ -53,14 +53,14 @@ public class ExpertController {
     }
 
     @PatchMapping("/confirm-email")
-//    @PreAuthorize("hasRole('EXPERT')")
+    @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<String> confirmEmail(@RequestParam(name = "token") String token){
         String confirmToken = expertService.confirmToken(token);
         return new ResponseEntity<>(confirmToken, HttpStatus.OK);
     }
 
     @PatchMapping("/update-expert-password")
-//    @PreAuthorize("hasRole('EXPERT')")
+    @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<ExpertSaveResponse> updatePasswordForExpert(@RequestBody ExpertPasswordUpdateRequest request){
         Expert updated = expertService.updatePassword(request.userId(), request.previousPass(), request.newPass(), request.newPass2());
 
@@ -69,7 +69,7 @@ public class ExpertController {
     }
 
     @PostMapping("/register-suggestion")
-//    @PreAuthorize("hasRole('EXPERT')")
+    @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<SuggestionSaveResponse> saveSuggestion(@RequestBody SuggestionSaveRequest request){
         Suggestion suggestion = SuggestionMapper.INSTANCE.suggestionSaveRequestToModel(request);
         Suggestion saved = suggestionService.registerSuggestionForOrder(suggestion, request.expertId(), request.orderId());
@@ -79,12 +79,13 @@ public class ExpertController {
     }
 
     @GetMapping("view-all-orders-waiting-for-suggestion")
-//    @PreAuthorize("hasRole('EXPERT')")
+    @PreAuthorize("hasRole('EXPERT')")
     public List<Order> findAllOrdersByStatus(){
         return orderService.findAllByStatusWaitingForSuggestion();
     }
 
     @GetMapping("/view-experts-score-by-order")
+    @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<Double> viewExpertsScoreByOrder(@RequestBody long orderId){
         double v = commentService.viewExpertsScoreByOrder(orderId);
 
@@ -93,17 +94,16 @@ public class ExpertController {
 
     @GetMapping("/find-all-subservices-of-expert")
     @ResponseStatus(HttpStatus.FOUND)
-//    @PreAuthorize("hasRole('EXPERT')")
+    @PreAuthorize("hasRole('EXPERT')")
     public List<Subservice> findAllSubservicesOfExpert(@RequestBody long expertId){
         return userSubserviceService.findAllByExpert_Id(expertId);
     }
 
     @GetMapping("/find-all-orders-by-subservice-waiting-for-suggestion")
-//    @PreAuthorize("hasRole('EXPERT')")
+    @PreAuthorize("hasRole('EXPERT')")
     @ResponseStatus(HttpStatus.FOUND)
     public List<OrderFindAllResponse> findAllOrdersByExpertSubservice(@RequestBody long subserviceId){
         return orderService.findAllBySubserviceWaitingForExpertSuggestion(subserviceId);
     }
-
 
 }
