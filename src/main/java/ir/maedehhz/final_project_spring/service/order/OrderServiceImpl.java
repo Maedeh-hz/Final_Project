@@ -1,7 +1,8 @@
 package ir.maedehhz.final_project_spring.service.order;
 
 import ir.maedehhz.final_project_spring.dto.order.OrderFindAllResponse;
-import ir.maedehhz.final_project_spring.exception.*;
+import ir.maedehhz.final_project_spring.exception.DateMismatchException;
+import ir.maedehhz.final_project_spring.exception.NotFoundException;
 import ir.maedehhz.final_project_spring.mapper.order.OrderMapper;
 import ir.maedehhz.final_project_spring.model.Customer;
 import ir.maedehhz.final_project_spring.model.Expert;
@@ -119,8 +120,6 @@ public class OrderServiceImpl implements OrderService{
         Order order = findById(orderId);
         if (!order.getToDoDateAndTime().isBefore(LocalDateTime.now()))
             throw new DateMismatchException("Its not the orders date!");
-        if (!order.getStatus().equals(OrderStatus.WAITING_FOR_EXPERT_TO_VISIT))
-            throw new InvalidRequestException("Order is not waiting for expert!");
 
         long between = ChronoUnit.HOURS.between(order.getToDoDateAndTime(), LocalDateTime.now());
         double newScore;
