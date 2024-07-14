@@ -3,10 +3,8 @@ package ir.maedehhz.final_project_spring.service.comment;
 import ir.maedehhz.final_project_spring.exception.DuplicateInfoException;
 import ir.maedehhz.final_project_spring.exception.InvalidInputException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
-import ir.maedehhz.final_project_spring.exception.InvalidRequestException;
 import ir.maedehhz.final_project_spring.model.Comment;
 import ir.maedehhz.final_project_spring.model.Order;
-import ir.maedehhz.final_project_spring.model.enums.OrderStatus;
 import ir.maedehhz.final_project_spring.repository.CommentRepository;
 import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +25,6 @@ public class CommentServiceImpl implements CommentService{
 
         if (repository.existsByOrder(order))
             throw new DuplicateInfoException("You have already registered a comment for this order!");
-
-        if (!order.getStatus().equals(OrderStatus.DONE))
-            throw new InvalidRequestException("Order is not done yet, you can't register comment for it!");
 
         if (comment.getExpertScore()<1 || comment.getExpertScore()>5)
             throw new InvalidInputException("Expert score should be not null " +
