@@ -3,6 +3,7 @@ package ir.maedehhz.final_project_spring.service.admin;
 import ir.maedehhz.final_project_spring.exception.DuplicateInfoException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
 import ir.maedehhz.final_project_spring.model.Admin;
+import ir.maedehhz.final_project_spring.model.enums.Role;
 import ir.maedehhz.final_project_spring.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 public class AdminServiceImpl implements AdminService {
 
     private final AdminRepository repository;
+//    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public Admin save(Admin admin) {
@@ -21,6 +23,8 @@ public class AdminServiceImpl implements AdminService {
             throw new DuplicateInfoException
                     (String.format("User with username %s exists!", admin.getUsername()));
         admin.setRegistrationDate(LocalDate.now());
+        admin.setRole(Role.ROLE_ADMIN);
+//        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         return repository.save(admin);
     }
 
