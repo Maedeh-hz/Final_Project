@@ -19,6 +19,7 @@ import ir.maedehhz.final_project_spring.service.admin.AdminServiceImpl;
 import ir.maedehhz.final_project_spring.service.expert.ExpertServiceImpl;
 import ir.maedehhz.final_project_spring.service.service.ServiceServiceImpl;
 import ir.maedehhz.final_project_spring.service.subservice.SubserviceServiceImpl;
+import ir.maedehhz.final_project_spring.service.user.UserServiceImpl;
 import ir.maedehhz.final_project_spring.service.user_subservice.User_SubserviceServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,10 +27,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin")
 public class AdminController {
+    private final UserServiceImpl userService;
     private final AdminServiceImpl adminService;
     private final ExpertServiceImpl expertService;
     private final ServiceServiceImpl serviceService;
@@ -116,6 +120,18 @@ public class AdminController {
 
         SubserviceSaveResponse response = SubserviceMapper.INSTANCE.modelToSubserviceSaveResponse(updated);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/filtering-users")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.FOUND)
+    public List filteringUsers(@RequestParam String dtype, String firstName,
+                                        String lastName, String email,
+                                        Double score, String expertise){
+        if (dtype.equals("Expert"))
+            return expertService.filteringExperts(firstName, lastName, email, score, expertise);
+
+        return userService.filteringUsers(dtype, firstName, lastName, email);
     }
 
     @GetMapping("/find-expert-by-id")
