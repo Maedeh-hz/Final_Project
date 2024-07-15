@@ -92,18 +92,18 @@ public class CustomerController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/view-all-suggestion-by-expert-score")
+    @GetMapping("/view-all-order-suggestions-by-expert-score")
     @PreAuthorize("hasRole('CUSTOMER')")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<Suggestion> findAllSuggestionByExpertScore(){
-        return suggestionService.viewAllByExpertScore();
+    public List<Suggestion> findAllSuggestionByExpertScore(@RequestParam long orderId){
+        return suggestionService.viewAllByExpertScore(orderId);
     }
 
-    @GetMapping("/view-all-suggestion-by-price")
+    @GetMapping("/view-all-order-suggestions-by-price")
     @PreAuthorize("hasRole('CUSTOMER')")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<Suggestion> findAllSuggestionByPrice(){
-        return suggestionService.viewAllByPrice();
+    public List<Suggestion> findAllSuggestionByPrice(@RequestParam long orderId){
+        return suggestionService.viewAllByPrice(orderId);
     }
 
     @PatchMapping("/choosing-suggestion")
