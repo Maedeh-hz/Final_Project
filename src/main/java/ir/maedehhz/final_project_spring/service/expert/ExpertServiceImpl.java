@@ -5,7 +5,6 @@ import ir.maedehhz.final_project_spring.email.EmailService;
 import ir.maedehhz.final_project_spring.exception.*;
 import ir.maedehhz.final_project_spring.mapper.expert.ExpertMapper;
 import ir.maedehhz.final_project_spring.model.Expert;
-import ir.maedehhz.final_project_spring.model.User;
 import ir.maedehhz.final_project_spring.model.enums.ExpertStatus;
 import ir.maedehhz.final_project_spring.model.enums.Role;
 import ir.maedehhz.final_project_spring.repository.ExpertRepository;
