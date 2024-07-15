@@ -11,11 +11,11 @@ import java.util.List;
 
 @Repository
 public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
-    @Query("select s from Suggestion s order by s.expert.score desc ")
-    List<Suggestion> findAllByExpert_Score();
+    @Query("select s from Suggestion s where s.order = ?1 order by s.expert.score desc ")
+    List<Suggestion> findAllByExpert_ScoreAndOrder(Order order);
 
-    @Query("select s from Suggestion s order by s.price asc ")
-    List<Suggestion> findAllByPrice();
+    @Query("select s from Suggestion s where s.order = ?1 order by s.price asc ")
+    List<Suggestion> findAllByPriceAndOrder(Order order);
 
     Suggestion findByExpertAndOrder(Expert expert, Order order);
 
