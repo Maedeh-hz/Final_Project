@@ -16,8 +16,4 @@ public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
 
     @Query("select s from Suggestion s where s.order = ?1 order by s.price asc ")
     List<Suggestion> findAllByPriceAndOrder(Order order);
-
-    Suggestion findByExpertAndOrder(Expert expert, Order order);
-
-    boolean existsByExpertAndOrder(Expert expert, Order order);
 }
