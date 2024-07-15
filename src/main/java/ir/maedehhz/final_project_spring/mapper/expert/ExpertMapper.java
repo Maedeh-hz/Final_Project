@@ -1,5 +1,6 @@
 package ir.maedehhz.final_project_spring.mapper.expert;
 
+import ir.maedehhz.final_project_spring.dto.expert.ExpertFilteringResponse;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertSaveRequest;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertSaveResponse;
 import ir.maedehhz.final_project_spring.model.Expert;
@@ -13,4 +14,5 @@ public interface ExpertMapper {
 
     Expert expertSaveRequestToModel(ExpertSaveRequest request);
     ExpertSaveResponse modelToExpertSaveResponse(Expert expert);
+    ExpertFilteringResponse modelToExpertFilteringResponse(Expert expert);
 }
