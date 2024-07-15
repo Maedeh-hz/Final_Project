@@ -1,13 +1,21 @@
 package ir.maedehhz.final_project_spring.service.expert;
 
+import ir.maedehhz.final_project_spring.dto.expert.ExpertFilteringResponse;
 import ir.maedehhz.final_project_spring.email.EmailService;
 import ir.maedehhz.final_project_spring.exception.*;
+import ir.maedehhz.final_project_spring.mapper.expert.ExpertMapper;
 import ir.maedehhz.final_project_spring.model.Expert;
+import ir.maedehhz.final_project_spring.model.User;
 import ir.maedehhz.final_project_spring.model.enums.ExpertStatus;
 import ir.maedehhz.final_project_spring.model.enums.Role;
 import ir.maedehhz.final_project_spring.repository.ExpertRepository;
 import ir.maedehhz.final_project_spring.token.ConfirmationToken;
 import ir.maedehhz.final_project_spring.token.service.TokenServiceImpl;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +37,7 @@ import java.util.regex.Pattern;
 public class ExpertServiceImpl implements ExpertService{
 
     private final ExpertRepository repository;
+    private final EntityManager entityManager;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenServiceImpl tokenService;
     private final EmailService emailService;
@@ -142,6 +153,38 @@ public class ExpertServiceImpl implements ExpertService{
     public Expert findById(long id) {
         return repository.findById(id).orElseThrow(() ->
                 new NotFoundException(String.format("Expert with id %s couldn't be found.", id)));
+    }
+
+    @Override
+    public List<ExpertFilteringResponse> filteringExperts(String firstName, String lastName, String email, Double score, String expertise) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Expert> cq = cb.createQuery(Expert.class);
+
+        Root<Expert> root = cq.from(Expert.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (score != null)
+            predicates.add(cb.equal(root.get("score"), score));
+
+        if (firstName != null)
+            predicates.add(cb.like(root.get("firstName"), "%" + firstName + "%"));
+
+        if (lastName != null)
+            predicates.add(cb.like(root.get("lastName"), "%" + lastName + "%"));
+
+        if (email != null)
+            predicates.add(cb.like(root.get("email"), "%" + email + "%"));
+
+        if (expertise != null)
+            predicates.add(cb.like(root.get("expertise"), "%" + expertise + "%"));
+
+        cq.where(predicates.toArray(new Predicate[0]));
+        List<Expert> resultList = entityManager.createQuery(cq).getResultList();
+        List<ExpertFilteringResponse> responses = new ArrayList<>();
+        resultList.forEach(expert ->
+                responses.add(ExpertMapper.INSTANCE.modelToExpertFilteringResponse(expert))
+        );
+        return responses;
     }
 
     private boolean validatePass(String pass){
