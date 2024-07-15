@@ -12,9 +12,9 @@ public interface SuggestionService {
 
     Order choosingExpert(long suggestionId);
 
-    List<Suggestion> viewAllByExpertScore();
+    List<Suggestion> viewAllByExpertScore(long orderId);
 
-    List<Suggestion> viewAllByPrice();
+    List<Suggestion> viewAllByPrice(long orderId);
 
     Suggestion findById(long id);
 

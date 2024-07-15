@@ -80,19 +80,21 @@ public class SuggestionServiceImpl implements SuggestionService{
     }
 
     @Override
-    public List<Suggestion> viewAllByExpertScore() {
+    public List<Suggestion> viewAllByExpertScore(long orderId) {
         if (repository.findAll().isEmpty())
             throw new NotFoundException("No Suggestions found.");
 
-        return repository.findAllByExpert_Score();
+        Order order = orderService.findById(orderId);
+        return repository.findAllByExpert_ScoreAndOrder(order);
     }
 
     @Override
-    public List<Suggestion> viewAllByPrice() {
+    public List<Suggestion> viewAllByPrice(long orderId) {
         if (repository.findAll().isEmpty())
             throw new NotFoundException("No Suggestions found.");
 
-        return repository.findAllByPrice();
+        Order order = orderService.findById(orderId);
+        return repository.findAllByPriceAndOrder(order);
     }
 
     @Override
