@@ -1,6 +1,5 @@
 package ir.maedehhz.final_project_spring.repository;
 
-import ir.maedehhz.final_project_spring.model.Expert;
 import ir.maedehhz.final_project_spring.model.Order;
 import ir.maedehhz.final_project_spring.model.Suggestion;
 import org.springframework.data.jpa.repository.JpaRepository;
