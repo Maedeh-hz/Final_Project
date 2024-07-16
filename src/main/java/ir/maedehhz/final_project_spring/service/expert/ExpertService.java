@@ -23,7 +23,8 @@ public interface ExpertService {
     Expert findById(long id);
 
     List<ExpertFilteringResponse> filteringExperts(
-            String firstName, String lastName, String email, Double score, String expertise
+            String firstName, String lastName, String email, Double score, String expertise,
+            String registrationDate, String expertStatus
     );
 
 }

@@ -8,6 +8,7 @@ import ir.maedehhz.final_project_spring.model.Expert;
 import ir.maedehhz.final_project_spring.model.enums.ExpertStatus;
 import ir.maedehhz.final_project_spring.model.enums.Role;
 import ir.maedehhz.final_project_spring.repository.ExpertRepository;
+import ir.maedehhz.final_project_spring.service.wallet.WalletServiceImpl;
 import ir.maedehhz.final_project_spring.token.ConfirmationToken;
 import ir.maedehhz.final_project_spring.token.service.TokenServiceImpl;
 import jakarta.persistence.EntityManager;
@@ -23,10 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +41,7 @@ public class ExpertServiceImpl implements ExpertService{
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenServiceImpl tokenService;
     private final EmailService emailService;
+    private final WalletServiceImpl walletService;
 
     @Override
     public Expert save(Expert expert, String imagePath) {
@@ -62,10 +64,15 @@ public class ExpertServiceImpl implements ExpertService{
             throw new ImageLengthOutOfBoundException("The uploaded image size is more than 300KB!");
 
         expert.setUsername(expert.getEmail());
-        expert.setRegistrationDate(LocalDate.now());
+        expert.setStatus(ExpertStatus.WAITING_FOR_VERIFYING);
+        expert.setScore(0D);
+        expert.setRegistrationDate(LocalDateTime.now());
         expert.setRole(Role.ROLE_EXPERT);
         expert.setPassword(passwordEncoder.encode(expert.getPassword()));
         Expert saved = repository.save(expert);
+
+        walletService.register(saved);
+        
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(
                 token,
@@ -105,15 +112,15 @@ public class ExpertServiceImpl implements ExpertService{
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = tokenService.findByToken(token);
 
-        if (confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("email already confirmed");
-        }
+        if (confirmationToken.getConfirmedAt() != null)
+            throw new InvalidRequestException("email already confirmed!");
+
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
-        if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("token expired");
-        }
+        if (expiredAt.isBefore(LocalDateTime.now()))
+            throw new InvalidRequestException("token expired!");
+
 
         tokenService.confirmedAt(token);
         enableExpert(confirmationToken.getUser().getEmail());
@@ -155,7 +162,9 @@ public class ExpertServiceImpl implements ExpertService{
     }
 
     @Override
-    public List<ExpertFilteringResponse> filteringExperts(String firstName, String lastName, String email, Double score, String expertise) {
+    public List<ExpertFilteringResponse> filteringExperts(String firstName, String lastName,
+                                                          String email, Double score, String expertise,
+                                                          String registrationDate, String expertStatus) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Expert> cq = cb.createQuery(Expert.class);
 
@@ -176,6 +185,12 @@ public class ExpertServiceImpl implements ExpertService{
 
         if (expertise != null)
             predicates.add(cb.like(root.get("expertise"), "%" + expertise + "%"));
+
+        if (registrationDate != null)
+            predicates.add(cb.like(root.get("registrationDate"), "%" + registrationDate + "%"));
+
+        if (expertStatus != null )
+            predicates.add(cb.equal(root.get("status"), expertStatus.toUpperCase(Locale.ROOT)));
 
         cq.where(predicates.toArray(new Predicate[0]));
         List<Expert> resultList = entityManager.createQuery(cq).getResultList();
