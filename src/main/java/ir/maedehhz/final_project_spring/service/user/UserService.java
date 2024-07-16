@@ -1,7 +1,6 @@
 package ir.maedehhz.final_project_spring.service.user;
 
 import ir.maedehhz.final_project_spring.model.User;
-import ir.maedehhz.final_project_spring.model.Wallet;
 
 import java.util.List;
 
