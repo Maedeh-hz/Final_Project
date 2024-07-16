@@ -28,7 +28,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> filteringUsers(String dtype, String firstName, String lastName, String email) {
+    public User findById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new NotFoundException(
+                String.format("User with id %s not found!", id)
+        ));
+    }
+
+    @Override
+    public List<User> filteringUsers(String dtype, String firstName, String lastName, String email, String registrationDate) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> cq = cb.createQuery(User.class);
 
@@ -46,6 +53,9 @@ public class UserServiceImpl implements UserService {
 
         if (email != null)
             predicates.add(cb.like(root.get("email"), "%" + email + "%"));
+
+        if (registrationDate != null)
+            predicates.add(cb.like(root.get("registrationDate"), "%" + registrationDate + "%"));
 
         cq.where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(cq).getResultList();
