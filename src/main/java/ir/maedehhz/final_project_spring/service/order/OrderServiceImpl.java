@@ -16,7 +16,6 @@ import ir.maedehhz.final_project_spring.service.subservice.SubserviceServiceImpl
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class OrderServiceImpl implements OrderService{
         if (order.getToDoDateAndTime().isBefore(LocalDateTime.now()))
             throw new DateMismatchException("The entered date is before today!");
 
-        order.setRegisterDate(LocalDate.now());
+        order.setRegisterDate(LocalDateTime.now());
         order.setStatus(OrderStatus.WAITING_FOR_EXPERT_SUGGESTION);
         return repository.save(order);
     }
