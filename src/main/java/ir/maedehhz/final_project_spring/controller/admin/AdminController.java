@@ -126,12 +126,12 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.FOUND)
     public List filteringUsers(@RequestParam String dtype, String firstName,
-                                        String lastName, String email,
-                                        Double score, String expertise){
+                               String lastName, String email, Double score,
+                               String expertise, String registerDate, String expertStatus){
         if (dtype.equals("Expert"))
-            return expertService.filteringExperts(firstName, lastName, email, score, expertise);
+            return expertService.filteringExperts(firstName, lastName, email, score, expertise, registerDate, expertStatus);
 
-        return userService.filteringUsers(dtype, firstName, lastName, email);
+        return userService.filteringUsers(dtype, firstName, lastName, email, registerDate);
     }
 
     @GetMapping("/find-expert-by-id")
