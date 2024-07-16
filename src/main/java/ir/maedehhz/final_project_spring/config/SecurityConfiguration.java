@@ -31,8 +31,6 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         s -> s
-//                                .requestMatchers(HttpMethod.POST, "/api/v1/expert/save-expert")
-//                                .permitAll()
                                 .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
