@@ -10,7 +10,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SoftDelete;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -38,7 +37,7 @@ public class Order {
 
     private Double suggestingPrice;
 
-    private LocalDate registerDate;
+    private LocalDateTime registerDate;
 
     private LocalDateTime toDoDateAndTime;
 
