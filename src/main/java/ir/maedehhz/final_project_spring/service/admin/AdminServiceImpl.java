@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class AdminServiceImpl implements AdminService {
         if (repository.existsByUsername(admin.getUsername()))
             throw new DuplicateInfoException
                     (String.format("User with username %s exists!", admin.getUsername()));
-        admin.setRegistrationDate(LocalDate.now());
+        admin.setRegistrationDate(LocalDateTime.now());
         admin.setRole(Role.ROLE_ADMIN);
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         return repository.save(admin);
