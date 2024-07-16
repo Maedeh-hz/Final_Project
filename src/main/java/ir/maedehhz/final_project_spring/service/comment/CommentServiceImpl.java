@@ -4,8 +4,10 @@ import ir.maedehhz.final_project_spring.exception.DuplicateInfoException;
 import ir.maedehhz.final_project_spring.exception.InvalidInputException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
 import ir.maedehhz.final_project_spring.model.Comment;
+import ir.maedehhz.final_project_spring.model.Expert;
 import ir.maedehhz.final_project_spring.model.Order;
 import ir.maedehhz.final_project_spring.repository.CommentRepository;
+import ir.maedehhz.final_project_spring.service.expert.ExpertServiceImpl;
 import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class CommentServiceImpl implements CommentService{
 
     private final CommentRepository repository;
     private final OrderServiceImpl orderService;
+    private final ExpertServiceImpl expertService;
 
     @Override
     public Comment save(Comment comment, long orderId) {
@@ -32,7 +35,17 @@ public class CommentServiceImpl implements CommentService{
 
         comment.setOrder(order);
         comment.setRegistrationDate(LocalDateTime.now());
-        return repository.save(comment);
+        Comment saved = repository.save(comment);
+
+        Expert expert = order.getSuggestion().getExpert();
+        Double scoreOnComment = saved.getExpertScore();
+        Double expertScore = expert.getScore();
+
+        Double newScore = (scoreOnComment + expertScore)/2;
+        expert.setScore(newScore);
+        expertService.updateScore(expert);
+
+        return saved;
     }
 
     @Override
