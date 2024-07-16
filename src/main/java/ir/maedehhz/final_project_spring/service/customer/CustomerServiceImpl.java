@@ -1,13 +1,11 @@
 package ir.maedehhz.final_project_spring.service.customer;
 
 import ir.maedehhz.final_project_spring.email.EmailService;
-import ir.maedehhz.final_project_spring.exception.DuplicateInfoException;
-import ir.maedehhz.final_project_spring.exception.InvalidInputException;
-import ir.maedehhz.final_project_spring.exception.NotFoundException;
-import ir.maedehhz.final_project_spring.exception.PasswordMismatchException;
+import ir.maedehhz.final_project_spring.exception.*;
 import ir.maedehhz.final_project_spring.model.Customer;
 import ir.maedehhz.final_project_spring.model.enums.Role;
 import ir.maedehhz.final_project_spring.repository.CustomerRepository;
+import ir.maedehhz.final_project_spring.service.wallet.WalletServiceImpl;
 import ir.maedehhz.final_project_spring.token.ConfirmationToken;
 import ir.maedehhz.final_project_spring.token.service.TokenServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -29,6 +26,7 @@ public class CustomerServiceImpl implements CustomerService{
     private final TokenServiceImpl tokenService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final WalletServiceImpl walletService;
 
     @Override
     public Customer save(Customer customer) {
@@ -41,10 +39,12 @@ public class CustomerServiceImpl implements CustomerService{
             throw new InvalidInputException("Users entrance email is invalid!");
 
         customer.setUsername(customer.getEmail());
-        customer.setRegistrationDate(LocalDate.now());
+        customer.setRegistrationDate(LocalDateTime.now());
         customer.setRole(Role.ROLE_CUSTOMER);
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         Customer saved = repository.save(customer);
+
+        walletService.register(saved);
 
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(
@@ -66,15 +66,15 @@ public class CustomerServiceImpl implements CustomerService{
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = tokenService.findByToken(token);
 
-        if (confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("email already confirmed");
-        }
+        if (confirmationToken.getConfirmedAt() != null)
+            throw new InvalidRequestException("email already confirmed!");
+
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
-        if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("token expired");
-        }
+        if (expiredAt.isBefore(LocalDateTime.now()))
+            throw new InvalidRequestException("token expired!");
+
 
         tokenService.confirmedAt(token);
         enableCustomer(confirmationToken.getUser().getEmail());
