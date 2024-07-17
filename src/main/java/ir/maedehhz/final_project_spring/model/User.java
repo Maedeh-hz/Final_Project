@@ -39,10 +39,8 @@ public class User implements UserDetails {
 
     private String lastName;
 
+    @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(unique = true)
-    private String username;
 
     private String password;
 
@@ -55,6 +53,11 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
     }
 
     @Override

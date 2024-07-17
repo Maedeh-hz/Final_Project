@@ -31,6 +31,9 @@ public class Order {
     private Subservice subservice;
 
     @ManyToOne(cascade = CascadeType.MERGE)
+    private Service service;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Customer customer;
 
     private String description;
@@ -45,7 +48,7 @@ public class Order {
     private OrderStatus status;
 
     @OneToOne(cascade = CascadeType.MERGE)
-    private Suggestion suggestion;
+    private Expert expert;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Address address;
