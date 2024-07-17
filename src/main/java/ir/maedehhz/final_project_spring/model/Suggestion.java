@@ -37,4 +37,6 @@ public class Suggestion {
     private Double price;
 
     private Double workDuration;
+
+    private boolean accepted = false;
 }
