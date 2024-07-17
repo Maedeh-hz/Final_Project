@@ -1,5 +1,6 @@
 package ir.maedehhz.final_project_spring.mapper.suggestion;
 
+import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionFindAllResponse;
 import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveRequest;
 import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveResponse;
 import ir.maedehhz.final_project_spring.model.Suggestion;
@@ -12,4 +13,5 @@ public interface SuggestionMapper {
 
     Suggestion suggestionSaveRequestToModel(SuggestionSaveRequest request);
     SuggestionSaveResponse modelToSuggestionSaveResponse(Suggestion suggestion);
+    SuggestionFindAllResponse modelToSuggestionFindAllResponse(Suggestion suggestion);
 }
