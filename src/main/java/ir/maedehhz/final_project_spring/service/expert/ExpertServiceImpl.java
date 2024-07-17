@@ -55,15 +55,15 @@ public class ExpertServiceImpl implements ExpertService{
         if (!validateEmail(expert.getEmail()))
             throw new InvalidInputException("Users entrance email is invalid!");
 
-        if (!imagePath.endsWith(".png"))
-            throw new ImageFormatException("The image format should be in PNG!");
+        if (!imagePath.endsWith(".jpg"))
+            throw new ImageFormatException("The image format should be in JPG!");
 
         expert.setImage(getBytesForExpert(imagePath));
 
         if (expert.getImage().length > 300 * 1024)
             throw new ImageLengthOutOfBoundException("The uploaded image size is more than 300KB!");
 
-        expert.setStatus(ExpertStatus.WAITING_FOR_VERIFYING);
+        expert.setStatus(ExpertStatus.UNVERIFIED);
         expert.setScore(0D);
         expert.setRegistrationDate(LocalDateTime.now());
         expert.setRole(Role.ROLE_EXPERT);
@@ -103,6 +103,7 @@ public class ExpertServiceImpl implements ExpertService{
     public void enableExpert(String username) {
         Expert expert = findByEmail(username);
         expert.setEnabled(true);
+        expert.setStatus(ExpertStatus.WAITING_FOR_VERIFYING);
         repository.save(expert);
     }
 
