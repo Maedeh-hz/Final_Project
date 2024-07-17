@@ -1,22 +1,22 @@
 package ir.maedehhz.final_project_spring.controller.expert;
 
-import ir.maedehhz.final_project_spring.dto.wallet.WalletSaveResponse;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertPasswordUpdateRequest;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertSaveRequest;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertSaveResponse;
 import ir.maedehhz.final_project_spring.dto.order.OrderFindAllResponse;
 import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveRequest;
 import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveResponse;
-import ir.maedehhz.final_project_spring.mapper.wallet.WalletMapper;
 import ir.maedehhz.final_project_spring.mapper.expert.ExpertMapper;
 import ir.maedehhz.final_project_spring.mapper.suggestion.SuggestionMapper;
-import ir.maedehhz.final_project_spring.model.*;
+import ir.maedehhz.final_project_spring.model.Expert;
+import ir.maedehhz.final_project_spring.model.Order;
+import ir.maedehhz.final_project_spring.model.Subservice;
+import ir.maedehhz.final_project_spring.model.Suggestion;
 import ir.maedehhz.final_project_spring.service.comment.CommentServiceImpl;
 import ir.maedehhz.final_project_spring.service.expert.ExpertServiceImpl;
 import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
 import ir.maedehhz.final_project_spring.service.suggestion.SuggestionServiceImpl;
 import ir.maedehhz.final_project_spring.service.user_subservice.User_SubserviceServiceImpl;
-import ir.maedehhz.final_project_spring.service.wallet.WalletServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,6 @@ public class ExpertController {
     private final OrderServiceImpl orderService;
     private final CommentServiceImpl commentService;
     private final User_SubserviceServiceImpl userSubserviceService;
-    private final WalletServiceImpl walletService;
 
     @PostMapping("/save-expert")
     public ResponseEntity<ExpertSaveResponse> saveExpert(@RequestBody ExpertSaveRequest request){
@@ -48,7 +47,6 @@ public class ExpertController {
     }
 
     @PatchMapping("/confirm-email")
-    @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<String> confirmEmail(@RequestParam(name = "token") String token){
         String confirmToken = expertService.confirmToken(token);
         return new ResponseEntity<>(confirmToken, HttpStatus.OK);
@@ -57,7 +55,7 @@ public class ExpertController {
     @PatchMapping("/update-expert-password")
     @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<ExpertSaveResponse> updatePasswordForExpert(@RequestBody ExpertPasswordUpdateRequest request){
-        Expert updated = expertService.updatePassword(request.userId(), request.previousPass(), request.newPass(), request.newPass2());
+        Expert updated = expertService.updatePassword(request.userId(), request.newPass(), request.newPass2());
 
         ExpertSaveResponse response = ExpertMapper.INSTANCE.modelToExpertSaveResponse(updated);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -67,21 +65,17 @@ public class ExpertController {
     @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<SuggestionSaveResponse> saveSuggestion(@RequestBody SuggestionSaveRequest request){
         Suggestion suggestion = SuggestionMapper.INSTANCE.suggestionSaveRequestToModel(request);
-        Suggestion saved = suggestionService.registerSuggestionForOrder(suggestion, request.expertId(), request.orderId());
+        Order order = orderService.findById(request.orderId());
+        Expert expert = expertService.findById(request.expertId());
+        Suggestion saved = suggestionService.registerSuggestionForOrder(suggestion, expert, order);
 
         SuggestionSaveResponse response = SuggestionMapper.INSTANCE.modelToSuggestionSaveResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("view-all-orders-waiting-for-suggestion")
+    @GetMapping("/view-expert-score-by-order")
     @PreAuthorize("hasRole('EXPERT')")
-    public List<Order> findAllOrdersByStatus(){
-        return orderService.findAllByStatusWaitingForSuggestion();
-    }
-
-    @GetMapping("/view-experts-score-by-order")
-    @PreAuthorize("hasRole('EXPERT')")
-    public ResponseEntity<Double> viewExpertsScoreByOrder(@RequestBody long orderId){
+    public ResponseEntity<Double> viewExpertsScoreByOrder(@RequestParam long orderId){
         double v = commentService.viewExpertsScoreByOrder(orderId);
 
         return new ResponseEntity<>(v, HttpStatus.FOUND);
@@ -90,23 +84,15 @@ public class ExpertController {
     @GetMapping("/find-all-subservices-of-expert")
     @ResponseStatus(HttpStatus.FOUND)
     @PreAuthorize("hasRole('EXPERT')")
-    public List<Subservice> findAllSubservicesOfExpert(@RequestBody long expertId){
+    public List<Subservice> findAllSubservicesOfExpert(@RequestParam long expertId){
         return userSubserviceService.findAllByExpert_Id(expertId);
     }
 
     @GetMapping("/find-all-orders-by-subservice-waiting-for-suggestion")
     @PreAuthorize("hasRole('EXPERT')")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<OrderFindAllResponse> findAllOrdersByExpertSubservice(@RequestBody long subserviceId){
+    public List<OrderFindAllResponse> findAllOrdersByExpertSubservice(@RequestParam long subserviceId){
         return orderService.findAllBySubserviceWaitingForExpertSuggestion(subserviceId);
-    }
-
-    @GetMapping("/wallet-balance")
-    @PreAuthorize("hasRole('EXPERT')")
-    public ResponseEntity<WalletSaveResponse> showWallet(@RequestParam long userId){
-        Wallet wallet = walletService.showWalletToUser(userId);
-        WalletSaveResponse response = WalletMapper.INSTANCE.modelToWalletSaveResponse(wallet);
-        return new ResponseEntity<>(response, HttpStatus.FOUND);
     }
 
 }

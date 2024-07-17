@@ -3,13 +3,13 @@ package ir.maedehhz.final_project_spring.controller.admin;
 import ir.maedehhz.final_project_spring.dto.admin.AdminSaveRequest;
 import ir.maedehhz.final_project_spring.dto.admin.AdminSaveResponse;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertSaveResponse;
+import ir.maedehhz.final_project_spring.dto.order.OrderFilteringResponse;
 import ir.maedehhz.final_project_spring.dto.service.ServiceSaveRequest;
 import ir.maedehhz.final_project_spring.dto.service.ServiceSaveResponse;
 import ir.maedehhz.final_project_spring.dto.subservice.SubserviceBasePriceUpdateRequest;
 import ir.maedehhz.final_project_spring.dto.subservice.SubserviceDescUpdateRequest;
 import ir.maedehhz.final_project_spring.dto.subservice.SubserviceSaveRequest;
 import ir.maedehhz.final_project_spring.dto.subservice.SubserviceSaveResponse;
-import ir.maedehhz.final_project_spring.dto.user_sub.ExpertToSubserviceRequest;
 import ir.maedehhz.final_project_spring.mapper.admin.AdminMapper;
 import ir.maedehhz.final_project_spring.mapper.expert.ExpertMapper;
 import ir.maedehhz.final_project_spring.mapper.service.ServiceMapper;
@@ -17,6 +17,7 @@ import ir.maedehhz.final_project_spring.mapper.subservice.SubserviceMapper;
 import ir.maedehhz.final_project_spring.model.*;
 import ir.maedehhz.final_project_spring.service.admin.AdminServiceImpl;
 import ir.maedehhz.final_project_spring.service.expert.ExpertServiceImpl;
+import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
 import ir.maedehhz.final_project_spring.service.service.ServiceServiceImpl;
 import ir.maedehhz.final_project_spring.service.subservice.SubserviceServiceImpl;
 import ir.maedehhz.final_project_spring.service.user.UserServiceImpl;
@@ -38,6 +39,7 @@ public class AdminController {
     private final ExpertServiceImpl expertService;
     private final ServiceServiceImpl serviceService;
     private final SubserviceServiceImpl subserviceService;
+    private final OrderServiceImpl orderService;
     private final User_SubserviceServiceImpl userSubserviceService;
 
     @PostMapping("/save-admin")
@@ -72,7 +74,7 @@ public class AdminController {
 
     @PatchMapping("/verifying-expert")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ExpertSaveResponse> verifyingExpert(@RequestBody long expertId){
+    public ResponseEntity<ExpertSaveResponse> verifyingExpert(@RequestParam long expertId){
         Expert updated = expertService.updateStatusToVerified(expertId);
 
         ExpertSaveResponse response = ExpertMapper.INSTANCE.modelToExpertSaveResponse(updated);
@@ -81,7 +83,7 @@ public class AdminController {
 
     @PatchMapping("/updating-expert-status-unverified")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ExpertSaveResponse> unverifyingExpert(@RequestBody long expertId){
+    public ResponseEntity<ExpertSaveResponse> unverifyingExpert(@RequestParam long expertId){
         Expert updated = expertService.updateStatusToUnverified(expertId);
 
         ExpertSaveResponse response = ExpertMapper.INSTANCE.modelToExpertSaveResponse(updated);
@@ -90,18 +92,18 @@ public class AdminController {
 
     @PostMapping("/add-expert-to-subservice")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User_SubService> addExpertToSubservice(@RequestBody ExpertToSubserviceRequest request){
-        User_SubService saved = userSubserviceService.save(request.expertId(), request.subserviceId());
+    public ResponseEntity<String> addExpertToSubservice(@RequestParam long expertId, long subserviceId){
+        User_SubService saved = userSubserviceService.save(expertId, subserviceId);
 
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        return new ResponseEntity<>("added successfully", HttpStatus.CREATED);
     }
 
     @PatchMapping("/remove-expert-from-subservice")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Boolean> removeExpertFromSubservice(@RequestBody ExpertToSubserviceRequest request){
-        boolean removed = userSubserviceService.remove(request.subserviceId(), request.expertId());
+    public ResponseEntity<String> removeExpertFromSubservice(@RequestParam long expertId, long subserviceId){
+        boolean removed = userSubserviceService.remove(subserviceId, expertId);
 
-        return new ResponseEntity<>(removed, HttpStatus.OK);
+        return new ResponseEntity<>("removed successfully", HttpStatus.OK);
     }
 
     @PatchMapping("/update-subservice-description")
@@ -134,13 +136,13 @@ public class AdminController {
         return userService.filteringUsers(dtype, firstName, lastName, email, registerDate);
     }
 
-    @GetMapping("/find-expert-by-id")
+    @GetMapping("/filtering-orders")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ExpertSaveResponse> findExpertById(@RequestParam long expertId){
-        Expert expert = expertService.findById(expertId);
-
-        ExpertSaveResponse response = ExpertMapper.INSTANCE.modelToExpertSaveResponse(expert);
-        return new ResponseEntity<>(response, HttpStatus.FOUND);
+    public List<OrderFilteringResponse> filteringOrders(@RequestParam
+            Long userId, String registrationDate, String orderStatus,
+            Long serviceId, Long subserviceId
+    ){
+        return orderService.filteringOrders(userId, registrationDate, orderStatus,
+                serviceId, subserviceId);
     }
-
 }
