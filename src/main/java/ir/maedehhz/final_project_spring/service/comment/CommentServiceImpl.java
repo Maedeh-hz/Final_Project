@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService{
         comment.setRegistrationDate(LocalDateTime.now());
         Comment saved = repository.save(comment);
 
-        Expert expert = order.getSuggestion().getExpert();
+        Expert expert = order.getExpert();
         Double scoreOnComment = saved.getExpertScore();
         Double expertScore = expert.getScore();
 
