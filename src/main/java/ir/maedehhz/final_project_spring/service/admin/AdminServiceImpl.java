@@ -20,9 +20,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Admin save(Admin admin) {
-        if (repository.existsByUsername(admin.getUsername()))
+        if (repository.existsByEmail(admin.getEmail()))
             throw new DuplicateInfoException
-                    (String.format("User with username %s exists!", admin.getUsername()));
+                    (String.format("User with email %s exists!", admin.getEmail()));
         admin.setRegistrationDate(LocalDateTime.now());
         admin.setRole(Role.ROLE_ADMIN);
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
