@@ -8,10 +8,12 @@ import ir.maedehhz.final_project_spring.dto.customer.CustomerSaveRequest;
 import ir.maedehhz.final_project_spring.dto.customer.CustomerSaveResponse;
 import ir.maedehhz.final_project_spring.dto.order.OrderSaveRequest;
 import ir.maedehhz.final_project_spring.dto.order.OrderSaveResponse;
+import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionFindAllResponse;
 import ir.maedehhz.final_project_spring.dto.wallet.WalletSaveResponse;
 import ir.maedehhz.final_project_spring.mapper.comment.CommentMapper;
 import ir.maedehhz.final_project_spring.mapper.customer.CustomerMapper;
 import ir.maedehhz.final_project_spring.mapper.order.OrderMapper;
+import ir.maedehhz.final_project_spring.mapper.suggestion.SuggestionMapper;
 import ir.maedehhz.final_project_spring.mapper.wallet.WalletMapper;
 import ir.maedehhz.final_project_spring.model.*;
 import ir.maedehhz.final_project_spring.service.card.CardServiceImpl;
@@ -27,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -96,17 +99,23 @@ public class CustomerController {
     @GetMapping("/view-all-order-suggestions-by-expert-score")
     @PreAuthorize("hasRole('CUSTOMER')")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<Suggestion> findAllSuggestionByExpertScore(@RequestParam long orderId){
+    public List<SuggestionFindAllResponse> findAllSuggestionByExpertScore(@RequestParam long orderId){
         Order order = orderService.findById(orderId);
-        return suggestionService.viewAllByExpertScore(order);
+        List<Suggestion> all = suggestionService.viewAllByExpertScore(order);
+        List<SuggestionFindAllResponse> responses = new ArrayList<>();
+        all.forEach(suggestion -> responses.add(SuggestionMapper.INSTANCE.modelToSuggestionFindAllResponse(suggestion)));
+        return responses;
     }
 
     @GetMapping("/view-all-order-suggestions-by-price")
     @PreAuthorize("hasRole('CUSTOMER')")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<Suggestion> findAllSuggestionByPrice(@RequestParam long orderId){
+    public List<SuggestionFindAllResponse> findAllSuggestionByPrice(@RequestParam long orderId){
         Order order = orderService.findById(orderId);
-        return suggestionService.viewAllByPrice(order);
+        List<Suggestion> all = suggestionService.viewAllByPrice(order);
+        List<SuggestionFindAllResponse> responses = new ArrayList<>();
+        all.forEach(suggestion -> responses.add(SuggestionMapper.INSTANCE.modelToSuggestionFindAllResponse(suggestion)));
+        return responses;
     }
 
     @PatchMapping("/choosing-suggestion")
@@ -156,6 +165,15 @@ public class CustomerController {
         orderService.updateStatusToPayed(orderId);
 
         return new ResponseEntity<>(wallet, HttpStatus.OK);
+    }
+
+    @GetMapping("/order-history")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public List<OrderSaveResponse> orderHistory(@RequestParam Long customerId){
+        List<Order> all = orderService.findAllByCustomer_Id(customerId);
+        List<OrderSaveResponse> responses = new ArrayList<>();
+        all.forEach(order -> responses.add(OrderMapper.INSTANCE.modelToOrderSaveResponse(order)));
+        return responses;
     }
 
     @GetMapping("/wallet-balance")

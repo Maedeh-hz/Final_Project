@@ -4,9 +4,12 @@ import ir.maedehhz.final_project_spring.dto.expert.ExpertPasswordUpdateRequest;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertSaveRequest;
 import ir.maedehhz.final_project_spring.dto.expert.ExpertSaveResponse;
 import ir.maedehhz.final_project_spring.dto.order.OrderFindAllResponse;
+import ir.maedehhz.final_project_spring.dto.order.OrderSaveResponse;
+import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionFindAllResponse;
 import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveRequest;
 import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionSaveResponse;
 import ir.maedehhz.final_project_spring.mapper.expert.ExpertMapper;
+import ir.maedehhz.final_project_spring.mapper.order.OrderMapper;
 import ir.maedehhz.final_project_spring.mapper.suggestion.SuggestionMapper;
 import ir.maedehhz.final_project_spring.model.Expert;
 import ir.maedehhz.final_project_spring.model.Order;
@@ -23,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -93,6 +97,21 @@ public class ExpertController {
     @ResponseStatus(HttpStatus.FOUND)
     public List<OrderFindAllResponse> findAllOrdersByExpertSubservice(@RequestParam long subserviceId){
         return orderService.findAllBySubserviceWaitingForExpertSuggestion(subserviceId);
+    }
+
+    @GetMapping("/order-history")
+    @PreAuthorize("hasRole('EXPERT')")
+    public List<OrderSaveResponse> orderHistory(@RequestParam Long expertId){
+        List<Order> all = orderService.findAllByExpert_Id(expertId);
+        List<OrderSaveResponse> responses = new ArrayList<>();
+        all.forEach(order -> responses.add(OrderMapper.INSTANCE.modelToOrderSaveResponse(order)));
+        return responses;
+    }
+
+    @GetMapping("/suggestion-history")
+    @PreAuthorize("hasRole('EXPERT')")
+    public List<SuggestionFindAllResponse> findAllByExpertId(@RequestParam Long expertId){
+        return suggestionService.findAllByExpertId(expertId);
     }
 
 }
