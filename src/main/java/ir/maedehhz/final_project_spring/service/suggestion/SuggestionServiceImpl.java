@@ -1,9 +1,11 @@
 package ir.maedehhz.final_project_spring.service.suggestion;
 
+import ir.maedehhz.final_project_spring.dto.suggestion.SuggestionFindAllResponse;
 import ir.maedehhz.final_project_spring.exception.DateMismatchException;
 import ir.maedehhz.final_project_spring.exception.InvalidInputException;
 import ir.maedehhz.final_project_spring.exception.InvalidRequestException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
+import ir.maedehhz.final_project_spring.mapper.suggestion.SuggestionMapper;
 import ir.maedehhz.final_project_spring.model.Expert;
 import ir.maedehhz.final_project_spring.model.Order;
 import ir.maedehhz.final_project_spring.model.Subservice;
@@ -73,6 +75,24 @@ public class SuggestionServiceImpl implements SuggestionService{
     public Suggestion findById(long id) {
         return repository.findById(id).orElseThrow(() ->
                 new NotFoundException(String.format("Suggestion with id %s couldn't be found.", id)));
+    }
+
+    @Override
+    public Suggestion confirmSuggestionAcceptance(Long suggestionId) {
+        Suggestion suggestion = findById(suggestionId);
+        suggestion.setAccepted(true);
+        return repository.save(suggestion);
+    }
+
+    @Override
+    public List<SuggestionFindAllResponse> findAllByExpertId(Long expertId) {
+        List<Suggestion> all = repository.findAllByExpert_Id(expertId);
+        if (all.isEmpty())
+            throw new NotFoundException("No suggestions found!");
+
+        List<SuggestionFindAllResponse> responses = new ArrayList<>();
+        all.forEach(suggestion -> responses.add(SuggestionMapper.INSTANCE.modelToSuggestionFindAllResponse(suggestion)));
+        return responses;
     }
 
     @Override
