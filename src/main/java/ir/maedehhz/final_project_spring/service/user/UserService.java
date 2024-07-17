@@ -5,7 +5,7 @@ import ir.maedehhz.final_project_spring.model.User;
 import java.util.List;
 
 public interface UserService {
-    User findByUsername(String username);
+    User findByEmail(String email);
 
     User findById(Long id);
 

@@ -22,9 +22,9 @@ public class UserServiceImpl implements UserService {
     private final EntityManager entityManager;
 
     @Override
-    public User findByUsername(String username) {
-        return repository.findByUsername(username).orElseThrow(() ->
-                new NotFoundException(String.format("No user with username %s found!", username)));
+    public User findByEmail(String email) {
+        return repository.findByEmail(email).orElseThrow(() ->
+                new NotFoundException(String.format("No user with email %s found!", email)));
     }
 
     @Override
