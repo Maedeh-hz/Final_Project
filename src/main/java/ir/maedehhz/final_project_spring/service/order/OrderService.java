@@ -16,6 +16,8 @@ public interface OrderService {
     Order updateStatusToDone(long orderId);
     void updateStatusToPayed(long orderId);
     void reduce1ScoreFromExpertPerHour(long orderId);
+    List<Order> findAllByExpert_Id(Long expert_id);
+    List<Order> findAllByCustomer_Id(Long customer_id);
 
     List<OrderFilteringResponse> filteringOrders(
             Long userId, String registrationDate, String orderStatus,

@@ -72,7 +72,11 @@ public class OrderServiceImpl implements OrderService{
         if (order.getExpert() == null)
             throw new CouldNotUpdateException("couldn't register the suggestion for order!");
 
-        return updateStatusToWaitingForExpertToVisit(order.getId());
+        Order updated = updateStatusToWaitingForExpertToVisit(order.getId());
+
+        Suggestion suggestion = suggestionService.confirmSuggestionAcceptance(suggestionId);
+
+        return updated;
     }
 
     private Order updatingOrdersSuggestion(Long suggestionId){
@@ -159,6 +163,22 @@ public class OrderServiceImpl implements OrderService{
         Expert updated = expertService.updateScore(byUsername);
         if (updated.getScore().equals(0D))
             expertService.updateStatusToUnverified(byUsername.getId());
+    }
+
+    @Override
+    public List<Order> findAllByExpert_Id(Long expert_id) {
+        List<Order> all = repository.findAllByExpert_Id(expert_id);
+        if (all.isEmpty())
+            throw new NotFoundException("No orders found!");
+        return all;
+    }
+
+    @Override
+    public List<Order> findAllByCustomer_Id(Long customer_id) {
+        List<Order> all = repository.findAllByCustomer_Id(customer_id);
+        if (all.isEmpty())
+            throw new NotFoundException("No orders found!");
+        return all;
     }
 
     @Override
