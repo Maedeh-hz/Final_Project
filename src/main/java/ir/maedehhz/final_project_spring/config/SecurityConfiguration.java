@@ -41,7 +41,7 @@ public class SecurityConfiguration {
     @Autowired
     public void configureBuild(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(userService::findByUsername)
+                .userDetailsService(userService::findByEmail)
                 .passwordEncoder(passwordEncoder);
     }
 
