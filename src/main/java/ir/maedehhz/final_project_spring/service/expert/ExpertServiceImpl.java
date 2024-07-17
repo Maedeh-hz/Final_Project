@@ -45,9 +45,9 @@ public class ExpertServiceImpl implements ExpertService{
 
     @Override
     public Expert save(Expert expert, String imagePath) {
-        if (repository.existsByUsername(expert.getEmail()))
+        if (repository.existsByEmail(expert.getEmail()))
             throw new DuplicateInfoException
-                    (String.format("User with username %s exists!", expert.getEmail()));
+                    (String.format("User with email %s exists!", expert.getEmail()));
 
         if (!validatePass(expert.getPassword()))
             throw new InvalidInputException("Users entrance password is invalid!");
@@ -63,7 +63,6 @@ public class ExpertServiceImpl implements ExpertService{
         if (expert.getImage().length > 300 * 1024)
             throw new ImageLengthOutOfBoundException("The uploaded image size is more than 300KB!");
 
-        expert.setUsername(expert.getEmail());
         expert.setStatus(ExpertStatus.WAITING_FOR_VERIFYING);
         expert.setScore(0D);
         expert.setRegistrationDate(LocalDateTime.now());
@@ -95,15 +94,14 @@ public class ExpertServiceImpl implements ExpertService{
     }
 
     @Override
-    public Expert findByUsername(String username) {
-        if (!repository.existsByUsername(username))
-            throw new NotFoundException(String.format("User with username %s not found!", username));
-        return repository.findByUsername(username);
+    public Expert findByEmail(String email) {
+        return repository.findByEmail(email).orElseThrow(() ->
+                new NotFoundException(String.format("User with email %s not found!", email)));
     }
 
     @Override
     public void enableExpert(String username) {
-        Expert expert = findByUsername(username);
+        Expert expert = findByEmail(username);
         expert.setEnabled(true);
         repository.save(expert);
     }
@@ -128,16 +126,15 @@ public class ExpertServiceImpl implements ExpertService{
     }
 
     @Override
-    public Expert updatePassword(long expertId, String previousPass, String newPass, String newPass2) {
+    public Expert updatePassword(long expertId, String newPass, String newPass2) {
         Expert expert = findById(expertId);
-        if (!previousPass.equals(expert.getPassword()))
-            throw new PasswordMismatchException("Wrong password!");
+
         if (!newPass.equals(newPass2))
             throw new PasswordMismatchException("The first and second passwords are not the same!");
         if (!validatePass(newPass))
             throw new InvalidInputException("Invalid password!");
         if (validatePass(newPass))
-            expert.setPassword(newPass);
+            expert.setPassword(passwordEncoder.encode(newPass));
         return repository.save(expert);
     }
 

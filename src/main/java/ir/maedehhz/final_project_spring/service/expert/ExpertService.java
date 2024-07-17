@@ -10,11 +10,11 @@ public interface ExpertService {
 
     Expert updateScore(Expert expert);
 
-    Expert findByUsername(String username);
+    Expert findByEmail(String email);
 
     void enableExpert(String username);
 
-    Expert updatePassword(long expertId, String previousPass, String newPass, String newPass2);
+    Expert updatePassword(long expertId, String newPass, String newPass2);
 
     Expert updateStatusToVerified(long expertId);
 
