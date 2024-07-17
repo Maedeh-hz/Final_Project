@@ -3,9 +3,11 @@ package ir.maedehhz.final_project_spring.service.wallet;
 import ir.maedehhz.final_project_spring.exception.CouldNotUpdateException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
 import ir.maedehhz.final_project_spring.model.Order;
+import ir.maedehhz.final_project_spring.model.Suggestion;
 import ir.maedehhz.final_project_spring.model.User;
 import ir.maedehhz.final_project_spring.model.Wallet;
 import ir.maedehhz.final_project_spring.repository.WalletRepository;
+import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
 import ir.maedehhz.final_project_spring.service.user.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,10 +35,10 @@ public class WalletServiceImpl implements WalletService{
     }
 
     @Override
-    public Wallet payingFromWallet(Order order) {
+    public Wallet payingFromWallet(Order order, Suggestion suggestion) {
         Long customerId = order.getCustomer().getId();
         Wallet wallet = findByUserId(customerId);
-        Double ordersPrice = order.getSuggestion().getPrice();
+        Double ordersPrice = suggestion.getPrice();
         
         if (wallet.getBalance() < ordersPrice)
             throw new CouldNotUpdateException("Insufficient credit!");
@@ -46,7 +48,7 @@ public class WalletServiceImpl implements WalletService{
         Wallet saved = repository.save(wallet);
 
         double expertShare = (ordersPrice * 100) / 70;
-        Wallet expertWallet = findByUserId(order.getSuggestion().getExpert().getId());
+        Wallet expertWallet = findByUserId(order.getExpert().getId());
         expertWallet.setBalance(expertWallet.getBalance()+expertShare);
         repository.save(expertWallet);
 

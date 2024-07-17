@@ -1,6 +1,7 @@
 package ir.maedehhz.final_project_spring.service.wallet;
 
 import ir.maedehhz.final_project_spring.model.Order;
+import ir.maedehhz.final_project_spring.model.Suggestion;
 import ir.maedehhz.final_project_spring.model.User;
 import ir.maedehhz.final_project_spring.model.Wallet;
 
@@ -9,7 +10,7 @@ public interface WalletService {
 
     Wallet findByUserId(long userId);
 
-    Wallet payingFromWallet(Order order);
+    Wallet payingFromWallet(Order order, Suggestion suggestion);
 
     Wallet showWalletToUser(long userId);
 
