@@ -14,7 +14,10 @@ import ir.maedehhz.final_project_spring.mapper.admin.AdminMapper;
 import ir.maedehhz.final_project_spring.mapper.expert.ExpertMapper;
 import ir.maedehhz.final_project_spring.mapper.service.ServiceMapper;
 import ir.maedehhz.final_project_spring.mapper.subservice.SubserviceMapper;
-import ir.maedehhz.final_project_spring.model.*;
+import ir.maedehhz.final_project_spring.model.Admin;
+import ir.maedehhz.final_project_spring.model.Expert;
+import ir.maedehhz.final_project_spring.model.Service;
+import ir.maedehhz.final_project_spring.model.Subservice;
 import ir.maedehhz.final_project_spring.service.admin.AdminServiceImpl;
 import ir.maedehhz.final_project_spring.service.expert.ExpertServiceImpl;
 import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
@@ -93,7 +96,7 @@ public class AdminController {
     @PostMapping("/add-expert-to-subservice")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> addExpertToSubservice(@RequestParam long expertId, long subserviceId){
-        User_SubService saved = userSubserviceService.save(expertId, subserviceId);
+        userSubserviceService.save(expertId, subserviceId);
 
         return new ResponseEntity<>("added successfully", HttpStatus.CREATED);
     }
@@ -101,7 +104,7 @@ public class AdminController {
     @PatchMapping("/remove-expert-from-subservice")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> removeExpertFromSubservice(@RequestParam long expertId, long subserviceId){
-        boolean removed = userSubserviceService.remove(subserviceId, expertId);
+        userSubserviceService.remove(subserviceId, expertId);
 
         return new ResponseEntity<>("removed successfully", HttpStatus.OK);
     }

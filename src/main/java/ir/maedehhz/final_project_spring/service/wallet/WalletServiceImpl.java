@@ -7,7 +7,6 @@ import ir.maedehhz.final_project_spring.model.Suggestion;
 import ir.maedehhz.final_project_spring.model.User;
 import ir.maedehhz.final_project_spring.model.Wallet;
 import ir.maedehhz.final_project_spring.repository.WalletRepository;
-import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
 import ir.maedehhz.final_project_spring.service.user.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

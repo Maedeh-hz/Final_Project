@@ -12,7 +12,6 @@ public interface OrderService {
     Order findById(long id);
     Order updateStatusToWaitingForExpertToVisit(long orderId);
     List<OrderFindAllResponse> findAllBySubserviceWaitingForExpertSuggestion(long subserviceId);
-    List<Order> findAllByStatusWaitingForSuggestion();
     Order updateStatusToStarted(long orderId);
     Order updateStatusToDone(long orderId);
     void updateStatusToPayed(long orderId);

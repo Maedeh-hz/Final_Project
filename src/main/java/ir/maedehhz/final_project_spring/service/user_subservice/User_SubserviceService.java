@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface User_SubserviceService {
     User_SubService save(long expertId, long subserviceId);
-    boolean remove(long subserviceId, long expertId);
+    void remove(long subserviceId, long expertId);
     List<Subservice> findAllByExpert_Id(long expertId);
 }

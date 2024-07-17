@@ -42,13 +42,12 @@ public class User_SubserviceServiceImpl implements User_SubserviceService{
     }
 
     @Override
-    public boolean remove(long subserviceId, long expertId) {
+    public void remove(long subserviceId, long expertId) {
         User_SubService founded = repository.findByExpert_IdAndAndSubservice_Id(expertId, subserviceId)
                 .orElseThrow(()-> new NotFoundException(String.format(
                         "Expert with id %s is not under service of this Subservice!", expertId))
                 );
         repository.delete(founded);
-        return true;
     }
 
     @Override
