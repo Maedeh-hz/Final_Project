@@ -117,14 +117,6 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public List<Order> findAllByStatusWaitingForSuggestion() {
-        if (!repository.existsByStatus(OrderStatus.WAITING_FOR_EXPERT_SUGGESTION))
-            throw new NotFoundException("There is no order with such status!");
-
-        return repository.findAllByStatus(OrderStatus.WAITING_FOR_EXPERT_SUGGESTION);
-    }
-
-    @Override
     public Order updateStatusToStarted(long orderId) {
         Order byId = findById(orderId);
         byId.setStatus(OrderStatus.STARTED);
