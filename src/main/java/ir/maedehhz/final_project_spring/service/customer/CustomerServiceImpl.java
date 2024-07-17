@@ -30,15 +30,14 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public Customer save(Customer customer) {
-        if (repository.existsByUsername(customer.getEmail()))
+        if (repository.existsByEmail(customer.getEmail()))
             throw new DuplicateInfoException
-                    (String.format("User with username %s exists!", customer.getEmail()));
+                    (String.format("User with email %s exists!", customer.getEmail()));
         if (!validatePass(customer.getPassword()))
             throw new InvalidInputException("Users entrance password is invalid!");
         if (!validateEmail(customer.getEmail()))
             throw new InvalidInputException("Users entrance email is invalid!");
 
-        customer.setUsername(customer.getEmail());
         customer.setRegistrationDate(LocalDateTime.now());
         customer.setRole(Role.ROLE_CUSTOMER);
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
@@ -88,29 +87,31 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public Customer findByUserName(String username) {
-        return repository.findByUsername(username).orElseThrow(() ->
+    public Customer findByEmail(String email) {
+        return repository.findByEmail(email).orElseThrow(() ->
                 new NotFoundException(String.format(
-                        "No user with username %s founded!", username
+                        "No user with username %s founded!", email
                 )));
     }
 
     @Override
-    public void enableCustomer(String username) {
-        Customer customer = findByUserName(username);
+    public void enableCustomer(String email) {
+        Customer customer = findByEmail(email);
         customer.setEnabled(true);
         repository.save(customer);
     }
 
     @Override
-    public Customer updatePassword(long customerId, String previousPass, String newPass, String newPass2) {
+    public Customer updatePassword(long customerId, String newPass, String newPass2) {
         Customer customer = findById(customerId);
+
         if (!newPass.equals(newPass2))
             throw new PasswordMismatchException("The first and second passwords are not the same!");
         if (!validatePass(newPass))
             throw new InvalidInputException("Invalid password!");
         if (validatePass(newPass))
-            customer.setPassword(newPass);
+            customer.setPassword(passwordEncoder.encode(newPass));
+
         return repository.save(customer);
     }
 
