@@ -23,17 +23,10 @@ public class SuggestionServiceImpl implements SuggestionService{
 
     private final SuggestionRepository repository;
 
-    private final OrderServiceImpl orderService;
-
-    private final ExpertServiceImpl expertService;
-
     private final User_SubserviceServiceImpl user_subserviceService;
 
     @Override
-    public Suggestion registerSuggestionForOrder(Suggestion suggestion, long expertId, long orderId) {
-        Expert expert = expertService.findById(expertId);
-        Order order = orderService.findById(orderId);
-
+    public Suggestion registerSuggestionForOrder(Suggestion suggestion, Expert expert, Order order) {
         suggestion.setExpert(expert);
         suggestion.setOrder(order);
         suggestion.setRegisterDate(LocalDate.now());
@@ -60,40 +53,18 @@ public class SuggestionServiceImpl implements SuggestionService{
     }
 
     @Override
-    public Order choosingExpert(long suggestionId) {
-        Order order = updatingOrdersSuggestion(suggestionId);
-
-        if (!order.getSuggestion().getId().equals(suggestionId))
-            throw new CouldNotUpdateException("couldn't register the suggestion for order!");
-
-        return orderService.updateStatusToWaitingForExpertToVisit(order.getId());
-    }
-
-    private Order updatingOrdersSuggestion(long suggestionId){
-        Suggestion suggestion = findById(suggestionId);
-
-        Order orderById = orderService.findById(suggestion.getOrder().getId());
-
-        orderById.setSuggestion(suggestion);
-
-        return orderService.updatingOrderSuggestion(orderById);
-    }
-
-    @Override
-    public List<Suggestion> viewAllByExpertScore(long orderId) {
+    public List<Suggestion> viewAllByExpertScore(Order order) {
         if (repository.findAll().isEmpty())
             throw new NotFoundException("No Suggestions found.");
 
-        Order order = orderService.findById(orderId);
         return repository.findAllByExpert_ScoreAndOrder(order);
     }
 
     @Override
-    public List<Suggestion> viewAllByPrice(long orderId) {
+    public List<Suggestion> viewAllByPrice(Order order) {
         if (repository.findAll().isEmpty())
             throw new NotFoundException("No Suggestions found.");
 
-        Order order = orderService.findById(orderId);
         return repository.findAllByPriceAndOrder(order);
     }
 
@@ -101,6 +72,12 @@ public class SuggestionServiceImpl implements SuggestionService{
     public Suggestion findById(long id) {
         return repository.findById(id).orElseThrow(() ->
                 new NotFoundException(String.format("Suggestion with id %s couldn't be found.", id)));
+    }
+
+    @Override
+    public Suggestion findByExpertAndOrder(Expert expert, Order order) {
+        return repository.findByExpertAndOrder(expert, order)
+                .orElseThrow(() -> new NotFoundException("No Suggestions founded!"));
     }
 
 }
