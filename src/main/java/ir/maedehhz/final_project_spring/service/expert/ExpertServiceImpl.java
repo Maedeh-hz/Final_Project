@@ -17,6 +17,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +81,7 @@ public class ExpertServiceImpl implements ExpertService{
                 saved
         );
         tokenService.save(confirmationToken);
-        String link = "http://localhost:8080/api/v1/customer/confirm-email?token=" + token;
+        String link = "http://localhost:8080/api/v1/expert/confirm-email?token=" + token;
         emailService.send(
                 saved.getEmail(),
                 EmailService.buildEmail(saved.getFirstName(), link)
@@ -110,26 +111,23 @@ public class ExpertServiceImpl implements ExpertService{
     @Transactional
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = tokenService.findByToken(token);
-
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!confirmationToken.getUser().getEmail().equals(currentUser))
+            throw new CouldNotUpdateException("You can't confirm this token!");
         if (confirmationToken.getConfirmedAt() != null)
             throw new InvalidRequestException("email already confirmed!");
-
-
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
-
         if (expiredAt.isBefore(LocalDateTime.now()))
             throw new InvalidRequestException("token expired!");
-
-
         tokenService.confirmedAt(token);
         enableExpert(confirmationToken.getUser().getEmail());
         return "confirmed";
     }
 
     @Override
-    public Expert updatePassword(long expertId, String newPass, String newPass2) {
-        Expert expert = findById(expertId);
-
+    public Expert updatePassword(String newPass, String newPass2) {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Expert expert = findByEmail(currentUserEmail);
         if (!newPass.equals(newPass2))
             throw new PasswordMismatchException("The first and second passwords are not the same!");
         if (!validatePass(newPass))

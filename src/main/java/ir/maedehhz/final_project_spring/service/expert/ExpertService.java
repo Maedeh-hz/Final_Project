@@ -14,7 +14,7 @@ public interface ExpertService {
 
     void enableExpert(String username);
 
-    Expert updatePassword(long expertId, String newPass, String newPass2);
+    Expert updatePassword(String newPass, String newPass2);
 
     Expert updateStatusToVerified(long expertId);
 
