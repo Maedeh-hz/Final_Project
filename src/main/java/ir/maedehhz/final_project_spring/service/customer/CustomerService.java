@@ -11,5 +11,5 @@ public interface CustomerService {
 
     void enableCustomer(String username);
 
-    Customer updatePassword(long customerId, String newPass, String newPass2);
+    Customer updatePassword(String newPass, String newPass2);
 }

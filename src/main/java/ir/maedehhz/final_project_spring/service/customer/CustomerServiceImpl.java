@@ -9,6 +9,7 @@ import ir.maedehhz.final_project_spring.service.wallet.WalletServiceImpl;
 import ir.maedehhz.final_project_spring.token.ConfirmationToken;
 import ir.maedehhz.final_project_spring.token.service.TokenServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,14 +38,11 @@ public class CustomerServiceImpl implements CustomerService{
             throw new InvalidInputException("Users entrance password is invalid!");
         if (!validateEmail(customer.getEmail()))
             throw new InvalidInputException("Users entrance email is invalid!");
-
         customer.setRegistrationDate(LocalDateTime.now());
         customer.setRole(Role.ROLE_CUSTOMER);
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         Customer saved = repository.save(customer);
-
         walletService.register(saved);
-
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(
                 token,
@@ -64,17 +62,14 @@ public class CustomerServiceImpl implements CustomerService{
     @Transactional
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = tokenService.findByToken(token);
-
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!confirmationToken.getUser().getEmail().equals(currentUserEmail))
+            throw new CouldNotUpdateException("You can't confirm this token!");
         if (confirmationToken.getConfirmedAt() != null)
             throw new InvalidRequestException("email already confirmed!");
-
-
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
-
         if (expiredAt.isBefore(LocalDateTime.now()))
             throw new InvalidRequestException("token expired!");
-
-
         tokenService.confirmedAt(token);
         enableCustomer(confirmationToken.getUser().getEmail());
         return "confirmed";
@@ -102,16 +97,15 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public Customer updatePassword(long customerId, String newPass, String newPass2) {
-        Customer customer = findById(customerId);
-
+    public Customer updatePassword(String newPass, String newPass2) {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Customer customer = findByEmail(currentUserEmail);
         if (!newPass.equals(newPass2))
             throw new PasswordMismatchException("The first and second passwords are not the same!");
         if (!validatePass(newPass))
             throw new InvalidInputException("Invalid password!");
         if (validatePass(newPass))
             customer.setPassword(passwordEncoder.encode(newPass));
-
         return repository.save(customer);
     }
 
