@@ -63,7 +63,7 @@ public class CustomerController {
     @PatchMapping("/update-customer-password")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CustomerSaveResponse> updatePasswordForCustomer(@RequestBody CustomerPasswordUpdateRequest request){
-        Customer updated = customerService.updatePassword(request.userId(), request.newPass(), request.newPass2());
+        Customer updated = customerService.updatePassword(request.newPass(), request.newPass2());
 
         CustomerSaveResponse response = CustomerMapper.INSTANCE.modelToCustomerSaveResponse(updated);
         return new ResponseEntity<>(response, HttpStatus.OK);

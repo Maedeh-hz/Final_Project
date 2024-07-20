@@ -50,7 +50,7 @@ public class ExpertController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/confirm-email")
+    @GetMapping("/confirm-email")
     public ResponseEntity<String> confirmEmail(@RequestParam(name = "token") String token){
         String confirmToken = expertService.confirmToken(token);
         return new ResponseEntity<>(confirmToken, HttpStatus.OK);
@@ -59,7 +59,7 @@ public class ExpertController {
     @PatchMapping("/update-expert-password")
     @PreAuthorize("hasRole('EXPERT')")
     public ResponseEntity<ExpertSaveResponse> updatePasswordForExpert(@RequestBody ExpertPasswordUpdateRequest request){
-        Expert updated = expertService.updatePassword(request.userId(), request.newPass(), request.newPass2());
+        Expert updated = expertService.updatePassword(request.newPass(), request.newPass2());
 
         ExpertSaveResponse response = ExpertMapper.INSTANCE.modelToExpertSaveResponse(updated);
         return new ResponseEntity<>(response, HttpStatus.OK);
