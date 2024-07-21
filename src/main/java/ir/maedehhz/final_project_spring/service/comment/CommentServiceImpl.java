@@ -1,5 +1,6 @@
 package ir.maedehhz.final_project_spring.service.comment;
 
+import ir.maedehhz.final_project_spring.exception.CouldNotUpdateException;
 import ir.maedehhz.final_project_spring.exception.DuplicateInfoException;
 import ir.maedehhz.final_project_spring.exception.InvalidInputException;
 import ir.maedehhz.final_project_spring.exception.NotFoundException;
@@ -10,6 +11,7 @@ import ir.maedehhz.final_project_spring.repository.CommentRepository;
 import ir.maedehhz.final_project_spring.service.expert.ExpertServiceImpl;
 import ir.maedehhz.final_project_spring.service.order.OrderServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,14 +27,15 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public Comment save(Comment comment, long orderId) {
         Order order = orderService.findById(orderId);
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        if (!order.getCustomer().getEmail().equals(currentUserEmail))
+            throw new CouldNotUpdateException("You can't register any comments for this order!");
         if (repository.existsByOrder(order))
             throw new DuplicateInfoException("You have already registered a comment for this order!");
-
         if (comment.getExpertScore()<1 || comment.getExpertScore()>5)
             throw new InvalidInputException("Expert score should be not null " +
                     "and greater than 1 and less than 5!");
-
         comment.setOrder(order);
         comment.setRegistrationDate(LocalDateTime.now());
         Comment saved = repository.save(comment);
@@ -40,7 +43,6 @@ public class CommentServiceImpl implements CommentService{
         Expert expert = order.getExpert();
         Double scoreOnComment = saved.getExpertScore();
         Double expertScore = expert.getScore();
-
         Double newScore = (scoreOnComment + expertScore)/2;
         expert.setScore(newScore);
         expertService.updateScore(expert);
