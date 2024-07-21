@@ -62,9 +62,6 @@ public class CustomerServiceImpl implements CustomerService{
     @Transactional
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = tokenService.findByToken(token);
-        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!confirmationToken.getUser().getEmail().equals(currentUserEmail))
-            throw new CouldNotUpdateException("You can't confirm this token!");
         if (confirmationToken.getConfirmedAt() != null)
             throw new InvalidRequestException("email already confirmed!");
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();

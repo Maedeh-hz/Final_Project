@@ -111,9 +111,6 @@ public class ExpertServiceImpl implements ExpertService{
     @Transactional
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = tokenService.findByToken(token);
-        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!confirmationToken.getUser().getEmail().equals(currentUser))
-            throw new CouldNotUpdateException("You can't confirm this token!");
         if (confirmationToken.getConfirmedAt() != null)
             throw new InvalidRequestException("email already confirmed!");
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
