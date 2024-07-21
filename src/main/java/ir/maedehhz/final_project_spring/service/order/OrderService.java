@@ -7,7 +7,7 @@ import ir.maedehhz.final_project_spring.model.Order;
 import java.util.List;
 
 public interface OrderService {
-    Order save(Order order, long subserviceId, long customerId);
+    Order save(Order order, long subserviceId);
     Order choosingExpert(long suggestionId);
     Order findById(long id);
     Order updateStatusToWaitingForExpertToVisit(long orderId);

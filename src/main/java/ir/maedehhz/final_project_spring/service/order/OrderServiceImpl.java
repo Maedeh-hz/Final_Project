@@ -21,6 +21,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -50,9 +51,10 @@ public class OrderServiceImpl implements OrderService{
     private final EntityManager entityManager;
 
     @Override
-    public Order save(Order order, long subserviceId, long customerId) {
+    public Order save(Order order, long subserviceId) {
         Subservice subservice = subserviceService.findById(subserviceId);
-        Customer customer = customerService.findById(customerId);
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Customer customer = customerService.findByEmail(currentUserEmail);
         order.setCustomer(customer);
         order.setSubservice(subservice);
 
@@ -74,7 +76,7 @@ public class OrderServiceImpl implements OrderService{
 
         Order updated = updateStatusToWaitingForExpertToVisit(order.getId());
 
-        Suggestion suggestion = suggestionService.confirmSuggestionAcceptance(suggestionId);
+        suggestionService.confirmSuggestionAcceptance(suggestionId);
 
         return updated;
     }
@@ -108,10 +110,8 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<OrderFindAllResponse> findAllBySubserviceWaitingForExpertSuggestion(long subserviceId) {
         List<Order> all = repository.findAllBySubservice_IdAndStatus(subserviceId, OrderStatus.WAITING_FOR_EXPERT_SUGGESTION);
-
         if (all.isEmpty())
             throw new NotFoundException("No order found for this subservice!");
-
         List<OrderFindAllResponse> allResponses = new ArrayList<>();
         all.forEach(order ->
             allResponses.add(OrderMapper.INSTANCE.modelToOrderFindAllResponse(order))
@@ -123,6 +123,9 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public Order updateStatusToStarted(long orderId) {
         Order byId = findById(orderId);
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!byId.getCustomer().getEmail().equals(currentUserEmail))
+            throw new CouldNotUpdateException("You can't update the status of this order!");
         byId.setStatus(OrderStatus.STARTED);
         Order saved = repository.save(byId);
         if (saved.getId()!=null)
@@ -133,7 +136,10 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public Order updateStatusToDone(long orderId) {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Order byId = findById(orderId);
+        if (!byId.getCustomer().getEmail().equals(currentUserEmail))
+            throw new CouldNotUpdateException("You can't update the status of this order!");
         byId.setStatus(OrderStatus.DONE);
         return repository.save(byId);
     }
@@ -167,18 +173,14 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public List<Order> findAllByExpert_Id(Long expert_id) {
-        List<Order> all = repository.findAllByExpert_Id(expert_id);
-        if (all.isEmpty())
-            throw new NotFoundException("No orders found!");
-        return all;
+
+        return null;
     }
 
     @Override
     public List<Order> findAllByCustomer_Id(Long customer_id) {
-        List<Order> all = repository.findAllByCustomer_Id(customer_id);
-        if (all.isEmpty())
-            throw new NotFoundException("No orders found!");
-        return all;
+
+        return null;
     }
 
     @Override
