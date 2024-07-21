@@ -9,6 +9,7 @@ import ir.maedehhz.final_project_spring.model.Wallet;
 import ir.maedehhz.final_project_spring.repository.WalletRepository;
 import ir.maedehhz.final_project_spring.service.user.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,10 +36,12 @@ public class WalletServiceImpl implements WalletService{
 
     @Override
     public Wallet payingFromWallet(Order order, Suggestion suggestion) {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!order.getCustomer().getEmail().equals(currentUserEmail))
+            throw new CouldNotUpdateException("You can't pay for this order!");
         Long customerId = order.getCustomer().getId();
         Wallet wallet = findByUserId(customerId);
         Double ordersPrice = suggestion.getPrice();
-        
         if (wallet.getBalance() < ordersPrice)
             throw new CouldNotUpdateException("Insufficient credit!");
         
