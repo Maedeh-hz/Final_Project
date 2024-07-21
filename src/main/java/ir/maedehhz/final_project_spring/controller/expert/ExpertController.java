@@ -99,6 +99,7 @@ public class ExpertController {
         return orderService.findAllBySubserviceWaitingForExpertSuggestion(subserviceId);
     }
 
+    //Todo with criteria
     @GetMapping("/order-history")
     @PreAuthorize("hasRole('EXPERT')")
     public List<OrderSaveResponse> orderHistory(@RequestParam Long expertId){

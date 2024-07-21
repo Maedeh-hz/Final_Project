@@ -74,7 +74,7 @@ public class CustomerController {
     public ResponseEntity<OrderSaveResponse> saveOrder(@RequestBody OrderSaveRequest request){
         Order order = OrderMapper.INSTANCE.orderSaveRequestToModel(request);
 
-        Order saved = orderService.save(order, request.subserviceId(), request.customerId());
+        Order saved = orderService.save(order, request.subserviceId());
         OrderSaveResponse response = OrderMapper.INSTANCE.modelToOrderSaveResponse(saved);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -167,6 +167,7 @@ public class CustomerController {
         return new ResponseEntity<>(wallet, HttpStatus.OK);
     }
 
+    //TODO with criteria
     @GetMapping("/order-history")
     @PreAuthorize("hasRole('CUSTOMER')")
     public List<OrderSaveResponse> orderHistory(@RequestParam Long customerId){
