@@ -17,7 +17,7 @@ public interface SuggestionService {
 
     Suggestion findById(long id);
 
-    Suggestion confirmSuggestionAcceptance(Long suggestionId);
+    void confirmSuggestionAcceptance(Long suggestionId);
 
     List<SuggestionFindAllResponse> findAllByExpertId(Long expertId);
 

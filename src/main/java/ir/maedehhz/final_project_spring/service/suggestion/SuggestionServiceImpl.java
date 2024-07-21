@@ -78,10 +78,10 @@ public class SuggestionServiceImpl implements SuggestionService{
     }
 
     @Override
-    public Suggestion confirmSuggestionAcceptance(Long suggestionId) {
+    public void confirmSuggestionAcceptance(Long suggestionId) {
         Suggestion suggestion = findById(suggestionId);
         suggestion.setAccepted(true);
-        return repository.save(suggestion);
+        repository.save(suggestion);
     }
 
     @Override
